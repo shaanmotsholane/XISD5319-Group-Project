@@ -2,6 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    text-decoration: none;
 }
 
 body{
@@ -16,6 +17,15 @@ body{
     top: 0;
     width: 100%;
     z-index: 9999;
+}
+
+.navlist{
+    display: flex;
+    align-items: center;
+}
+
+.navlist a:hover{
+    color:#555;
 }
 
 .logo a{
