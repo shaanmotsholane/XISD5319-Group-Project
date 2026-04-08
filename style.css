@@ -211,3 +211,45 @@ footer li{
     margin-bottom: 8px;
 }
 
+
+/* Shop Title */
+
+.shop-title{
+    text-align: center;
+    padding: 100px 20px 40px;
+}
+
+/* Product Grid */
+
+.product-section{
+    padding: 40px;
+}
+
+.product-grid{
+    display: grid;
+
+    grid-template-columns:
+    repeat(3, 1fr);
+
+    gap: 30px;
+}
+
+/* Product Card */
+
+.product-card{
+    text-align: center;
+}
+
+.product-card img{
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+
+.product-card h3{
+    margin-top: 10px;
+}
+
+.product-card p{
+    font-weight: bold;
+}
