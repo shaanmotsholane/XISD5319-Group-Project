@@ -59,7 +59,7 @@ button a{
     left: 50%;
     transform:translate(-50%,-50%);
     text-align: center;
-    color: white;
+    color: black;
 
 }
 .hero-text h1{
@@ -68,8 +68,9 @@ button a{
 }
 
 .hero-text p{
-    font-size: 18px;
+    font-size: 20px;
     margin-bottom: 20px;
+    font-weight: bold;
 }
 .shop-btn{
     background-color: black;
@@ -82,7 +83,7 @@ button a{
     width: 100%;
     height: 650px;
 
-    background-image: url(https://placehold.co/1540x600);
+    background-image: url("images/T1.jpeg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
