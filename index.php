@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,18 +17,35 @@
 
     <!-- **********NAVBAR********** -->
     <nav class="navbar">
-        <div class="logo"><a href="index.html">mustbedelah</a></div>
+        <div class="logo"><a href="index.php">mustbedelah</a></div>
         <ul class="navlist">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="shop.html">Shop</a></li>
-            <li><a href="about.html#contact">Contact Us</a></li>
+            <li><a href="index.php">Home</a></li>
+            <li><a href="about.php">About</a></li>
+            <li><a href="shop.php">Shop</a></li>
+            <li><a href="about.php#contact">Contact Us</a></li>
             <li><a href="#">Search</a></li>
 
-            <!-- FIXED (removed button wrapping link) -->
-            <li><a href="#">SignIn</a></li>
+            <li><a href="cart.php">Cart</a></li>
 
-            <li><a href="#">Cart</a></li>
+            <?php if(isset($_SESSION['name'])){ ?>
+
+                <li>
+                    <a href="#">
+                        Welcome <?php echo $_SESSION['name']; ?>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="logout.php">Logout</a>
+                </li>
+
+                <?php } else { ?>
+
+                    <li>
+                        <a href="login.php">Sign In</a>
+                    </li>
+
+            <?php } ?>
         </ul>
     </nav>
 
@@ -42,7 +63,7 @@
                 Rep the culture, own the streets.
             </p>
 
-            <a href="shop.html">
+            <a href="shop.php">
                 <button class="shop-btn">
                     Shop Now
                 </button>
@@ -60,7 +81,7 @@
         <div class="style-grid">
 
             <!-- FIXED (anchor wrapping properly closed) -->
-            <a href="shop.html">
+            <a href="shop.php">
                 <div class="card">
                     <img src="images/DSC_0658.JPG" alt="Hoodies">
                     <h3>Hoodies & Jackets</h3>
@@ -68,7 +89,7 @@
                 </div>
             </a>
 
-            <a href="shop.html">
+            <a href="shop.php">
                 <div class="card">
                     <img src="images/DSC_0634.JPG" alt="Street Culture">
                     <h3>Street Culture</h3>
@@ -76,7 +97,7 @@
                 </div>
             </a>
 
-            <a href="shop.html">
+            <a href="shop.php">
                 <div class="card">
                     <img src="images/cap.jpeg" alt="Accessories">
                     <h3>Accessories</h3>

@@ -18,20 +18,20 @@
     <nav class="navbar">
 
         <div class="logo">
-            <a href="index.html">
+            <a href="index.php">
                 mustbedelah
             </a>
         </div>
 
         <ul class="navlist">
 
-            <li><a href="index.html">Home</a></li>
+            <li><a href="index.php">Home</a></li>
 
-            <li><a href="shop.html">Shop</a></li>
+            <li><a href="shop.php">Shop</a></li>
 
-            <li><a href="about.html">About</a></li>
+            <li><a href="about.php">About</a></li>
 
-            <li><a href="about.html#contact">
+            <li><a href="about.php#contact">
                     Contact
                 </a></li>
 
@@ -111,16 +111,16 @@
             <h5>mustbedelah</h5>
 
             <ul class="list1">
-                <li class="Top"><a href="shop.html">Shop</a></li>
-                <li id="foot"><a href="shop.html">New Drops</a></li>
-                <li id="foot"><a href="shop.html">Hoodies & Tees</a></li>
-                <li id="foot"><a href="shop.html">Bottoms</a></li>
+                <li class="Top"><a href="shop.php">Shop</a></li>
+                <li id="foot"><a href="shop.php">New Drops</a></li>
+                <li id="foot"><a href="shop.php">Hoodies & Tees</a></li>
+                <li id="foot"><a href="shop.php">Bottoms</a></li>
             </ul>
 
             <ul class="list2">
                 <li class="Top">Company</li>
-                <li id="foot"><a href="about.html">About us</a></li>
-                <li id="foot"><a href="about.html#contact">Contact us</a></li>
+                <li id="foot"><a href="about.php">About us</a></li>
+                <li id="foot"><a href="about.php#contact">Contact us</a></li>
             </ul>
 
             <ul class="list3">
