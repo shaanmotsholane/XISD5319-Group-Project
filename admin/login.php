@@ -18,7 +18,7 @@ if(isset($_POST['login'])){
 
         $_SESSION['admin'] = $username;
 
-        header("Location: manage-products.php");
+        header("Location: dashboard.php");
 
     }else{
         echo "Invalid Admin Credentials";
