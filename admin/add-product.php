@@ -1,4 +1,11 @@
 <?php
+session_start();
+
+if(!isset($_SESSION['admin'])){
+    header("Location: login.php");
+    exit();
+}
+
 include '../config/db.php';
 
 if(isset($_POST['add_product'])){
@@ -21,9 +28,10 @@ if(isset($_POST['add_product'])){
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Add Product</title>
 
-    <style>
+<title>Add Product</title>
+
+<style>
 
 body{
     font-family: Arial;
@@ -59,26 +67,47 @@ h1{
 }
 
 </style>
+
 </head>
+
 <body>
 
 <h1>Add Product</h1>
 
 <form method="POST">
 
-    <input type="text" name="product_name" placeholder="Product Name" required>
+    <input type="text"
+           name="product_name"
+           placeholder="Product Name"
+           required>
+
     <br><br>
 
-    <input type="number" step="0.01" name="price" placeholder="Price" required>
+    <input type="number"
+           step="0.01"
+           name="price"
+           placeholder="Price"
+           required>
+
     <br><br>
 
-    <textarea name="description" placeholder="Description"></textarea>
+    <textarea name="description"
+              placeholder="Description"></textarea>
+
     <br><br>
 
-    <input type="number" name="stock_quantity" placeholder="Stock Quantity" required>
+    <input type="number"
+           name="stock_quantity"
+           placeholder="Stock Quantity"
+           required>
+
     <br><br>
 
-    <input type="text" name="image" placeholder="Image Path Example: images/shirt.jpg" required>
+    <input type="text"
+           name="image"
+           placeholder="Image Path Example: images/shirt.jpg"
+           required>
+
     <br><br>
 
     <button type="submit" name="add_product">
