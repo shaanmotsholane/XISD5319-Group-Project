@@ -1,3 +1,21 @@
+<?php
+include 'config/db.php';
+
+if(isset($_POST['send_message'])){
+
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $message = $_POST['message'];
+
+    $sql = "INSERT INTO contact_messages(name, email, message)
+            VALUES('$name', '$email', '$message')";
+
+    mysqli_query($conn, $sql);
+
+    echo "Message Sent Successfully";
+}
+?>
+
 <!DOCTYPE html> 
 <html lang="en">
 
@@ -23,13 +41,11 @@
             </a>
         </div>
 
-        <ul class="navlist">
+        <ul class="nav-links">
 
             <li><a href="index.php">Home</a></li>
 
             <li><a href="shop.php">Shop</a></li>
-
-            <li><a href="about.php">About</a></li>
 
             <li><a href="about.php#contact">
                     Contact
@@ -83,16 +99,16 @@
         <h2>Contact Me</h2>
 
         <!-- method + proper button type -->
-        <form class="contact-form" id="contactForm">
+        <form class="contact-form" id="contactForm" method="POST">
 
-            <input type="text" placeholder="First name" required>
+            <input type="text" placeholder="First name" required name = "name" >
 
-            <input type="text" placeholder="Last name" required>
+            <input type="text" placeholder="Last name" required name = "lastname">
 
-            <input type="email" placeholder="Email address" required>
+            <input type="email" placeholder="Email address" required name = "email">
 
             <!-- removed spacing inside textarea -->
-            <textarea placeholder="Enter your question or message"></textarea>
+            <textarea name = "mesage" placeholder="Enter your question or message"></textarea>
 
             
             <button type="submit" class="submit-btn">
@@ -111,16 +127,16 @@
             <h5>mustbedelah</h5>
 
             <ul class="list1">
-                <li class="Top"><a href="shop.php">Shop</a></li>
-                <li id="foot"><a href="shop.php">New Drops</a></li>
-                <li id="foot"><a href="shop.php">Hoodies & Tees</a></li>
-                <li id="foot"><a href="shop.php">Bottoms</a></li>
+                <li class="Top">Shop</li>
+                <li>New Drops</li>
+                <li>Hoodies & Tees</li>
+                <li>Bottoms</li>
             </ul>
 
             <ul class="list2">
                 <li class="Top">Company</li>
-                <li id="foot"><a href="about.php">About us</a></li>
-                <li id="foot"><a href="about.php#contact">Contact us</a></li>
+                <li>About us</li>
+                <li>Contact us</li>
             </ul>
 
             <ul class="list3">
@@ -131,7 +147,6 @@
             </ul>
 
         </footer>
-
     </section>
 
     

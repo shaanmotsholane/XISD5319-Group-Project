@@ -5,37 +5,55 @@
     text-decoration: none;
 }
 
+a{
+    text-decoration: none;
+    color: inherit;
+}
+
 body{
     background-color: white;
     color: black;
     font-family: Arial,sans-serif;
 }
 /* This is css for the navbar only but we can use it also for the other blocks if need be */
+
 .navbar{
-    font-family: calibri;padding-right: 15px;padding-left: 15px;display: flex;align-items: center;justify-content: space-between;
-    position: fixed;
-    top: 0;
     width: 100%;
-    z-index: 9999;
-}
-
-.navlist{
     display: flex;
+    justify-content: space-between;
     align-items: center;
-}
-
-.navlist a:hover{
-    color:#555;
+    padding: 20px 60px;
+    background: #111;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid #222;
 }
 
 .logo a{
-    font-size: 35px;font-weight: 600px;color: black;
+    text-decoration: none;
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+    letter-spacing: 2px;
+    text-transform: uppercase;
 }
-li{
-    list-style: none;display: inline-block;padding: 10px;
+
+.nav-links{
+    display: flex;
+    gap: 30px;
+    list-style: none;
 }
-li a{
-    color: black;font-weight: bold;font-size: 18px;margin-right: 25px;
+
+.nav-links li a{
+    text-decoration: none;
+    color: white;
+    font-size: 15px;
+    transition: 0.3s;
+}
+
+.nav-links li a:hover{
+    opacity: #999;
 }
 button{
     background-color: black;margin-left: 10px;border-radius: 10px;width: 90px;padding: 10px;
@@ -45,48 +63,85 @@ button a{
     background-color: black;color: white; font-size: 15px;font-weight: bold;
 }
 
+
+/* SEARCH FORM */
+
+.search-form{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 40px;
+}
+
+.search-form input{
+    width: 300px;
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+.search-form button{
+    padding: 12px 20px;
+    border: none;
+    background: black;
+    color: white;
+    cursor: pointer;
+}
+
 /* This will be the hero section */
+
 
 .hero{
     position: relative;
-    margin-top: 70px;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
 
+.placeholder-img{
+    width: 100%;
+    height: 100%;
+    background-image: url("images/T1.jpeg");
+    background-size: cover;
+    background-position: center;
+    filter: brightness(55%);
 }
 
 .hero-text{
     position: absolute;
     top: 50%;
     left: 50%;
-    transform:translate(-50%,-50%);
+    transform: translate(-50%, -50%);
     text-align: center;
-    color: black;
-
+    color: white;
+    width: 90%;
 }
+
 .hero-text h1{
-    font-size: 48px;
-    margin-bottom: 10px;
+    font-size: 70px;
+    letter-spacing: 4px;
+    margin-bottom: 20px;
+    font-weight: bold;
 }
 
 .hero-text p{
     font-size: 20px;
-    margin-bottom: 20px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.shop-btn{
+    background: white;
+    color: black;
+    border: none;
+    padding: 15px 35px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
     font-weight: bold;
 }
-.shop-btn{
-    background-color: black;
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    cursor: pointer;
-}
-.placeholder-img{
-    width: 100%;
-    height: 650px;
 
-    background-image: url("images/T1.jpeg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+.shop-btn:hover{
+    background: #ddd;
 }
 
 /* This should be on style section  */
@@ -116,7 +171,7 @@ button a{
     object-fit: cover;
 }
 
-/* This is tfor the born section */
+/* This is for the born section */
 
 .born{
     display: flex;
@@ -172,15 +227,49 @@ button:hover{
 
 /* Footer Layout */
 
+
 footer{
+    background: #111;
+    color: white;
+
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: flex-start;
 
-    padding: 40px 20px;
-    margin-top: 50px;
+    padding: 80px;
 
-    background-color: #f5f5f5;
+    margin-top: 100px;
+
+    flex-wrap: wrap;
+}
+
+footer h5{
+    font-size: 30px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.list1,
+.list2,
+.list3{
+    list-style: none;
+}
+
+.Top{
+    font-size: 18px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+footer li{
+    margin-bottom: 12px;
+    color: #bbb;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+footer li:hover{
+    color: white;
 }
 
 /* Logo text */
@@ -219,46 +308,70 @@ footer li{
 
 /* Shop Title */
 
+
 .shop-title{
     text-align: center;
-    padding: 100px 20px 40px;
+    padding: 120px 20px 60px;
 }
 
-/* Product Grid */
+.shop-title h1{
+    font-size: 50px;
+    letter-spacing: 3px;
+}
+
+/* PRODUCT GRID */
 
 .product-section{
-    padding: 40px;
+    padding: 40px 80px;
 }
 
 .product-grid{
     display: grid;
-
-    grid-template-columns:
-    repeat(3, 1fr);
-
-    gap: 30px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
 }
 
-/* Product Card */
+/* PRODUCT CARD */
 
 .product-card{
-    text-align: center;
+    text-align: left;
+    transition: 0.3s;
+}
+
+.product-card:hover{
+    transform: translateY(-5px);
 }
 
 .product-card img{
     width: 100%;
-    height: 250px;
+    height: 450px;
     object-fit: cover;
 }
 
 .product-card h3{
-    margin-top: 10px;
+    margin-top: 15px;
+    font-size: 18px;
 }
 
 .product-card p{
-    font-weight: bold;
+    margin-top: 8px;
+    font-size: 15px;
 }
 
+.product-card button{
+    margin-top: 15px;
+    padding: 12px 20px;
+    width: 100%;
+    border: none;
+    background: black;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.product-card button:hover{
+    background: #333;
+}
 /* ABOUT PAGE */
 
 .about-page{
@@ -364,5 +477,118 @@ padding: 12px 25px;
 border: none;
 
 cursor: pointer;
+
+}
+
+/* RESPONSIVE DESIGN */
+
+@media(max-width: 992px){
+
+    /* NAVBAR */
+
+    .navbar{
+        padding: 20px 30px;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .nav-links{
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    /* HERO */
+
+    .hero{
+        height: 80vh;
+    }
+
+    .hero-text h1{
+        font-size: 45px;
+    }
+
+    .hero-text p{
+        font-size: 16px;
+    }
+
+    /* STYLE SECTION */
+
+    .style-grid{
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card{
+        width: 90%;
+    }
+
+    /* PRODUCT GRID */
+
+    .product-grid{
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* ABOUT */
+
+    .about-page{
+        flex-direction: column;
+        text-align: center;
+    }
+
+    /* BORN SECTION */
+
+    .born{
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .born img{
+        width: 100%;
+        height: auto;
+    }
+
+    /* FOOTER */
+
+    footer{
+        flex-direction: column;
+        gap: 40px;
+    }
+
+}
+
+@media(max-width: 600px){
+
+    /* HERO */
+
+    .hero-text h1{
+        font-size: 32px;
+    }
+
+    .hero-text p{
+        font-size: 14px;
+    }
+
+    /* PRODUCT GRID */
+
+    .product-grid{
+        grid-template-columns: 1fr;
+    }
+
+    .product-section{
+        padding: 20px;
+    }
+
+    /* SHOP TITLE */
+
+    .shop-title h1{
+        font-size: 35px;
+    }
+
+    /* FOOTER */
+
+    footer{
+        padding: 50px 30px;
+    }
 
 }

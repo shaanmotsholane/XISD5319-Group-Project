@@ -21,11 +21,11 @@
             <a href="index.php">mustbedelah</a>
         </div>
 
-        <ul class="navlist">
+        <ul class="nav-links">
 
             <li><a href="index.php">Home</a></li>
 
-            <li><a href="shop.php">Shop</a></li>
+            <li><a href="cart.php">Cart</a></li>
 
             <li><a href="about.php">About</a></li>
 
@@ -53,23 +53,23 @@
 
     <!-- PRODUCT GRID -->
 
-    <section class="product-section">
+<section class="product-section">
 
-        <div class="product-grid">
+    <form method="GET"
+          action="shop.php"
+          class="search-form">
 
-            <form method="GET" action="shop.php">
+        <input type="text"
+               name="search"
+               placeholder="Search products">
 
-                <input type="text"
-                    name="search"
-                    placeholder="Search products">
+        <button type="submit">
+            Search
+        </button>
 
-                <button type="submit">
-                    Search
-                </button>
+    </form>
 
-        </form>
-
-        <br><br>
+    <div class="product-grid">
 
             <?php
                 include 'config/db.php';
@@ -130,16 +130,16 @@
             <h5>mustbedelah</h5>
 
             <ul class="list1">
-                <li class="Top"><a href="shop.php">Shop</a></li>
-                <li><a href="shop.php">New Drops</a></li>
-                <li><a href="shop.php">Hoodies & Tees</a></li>
-                <li><a href="shop.php">Bottoms</a></li>
+                <li class="Top">Shop</li>
+                <li>New Drops</li>
+                <li>Hoodies & Tees</li>
+                <li>Bottoms</li>
             </ul>
 
             <ul class="list2">
                 <li class="Top">Company</li>
-                <li><a href="about.php">About us</a></li>
-                <li><a href="about.php#contact">Contact us</a></li>
+                <li>About us</li>
+                <li>Contact us</li>
             </ul>
 
             <ul class="list3">

@@ -74,46 +74,102 @@ if(isset($_POST['place_order'])){
 
     <style>
 
-        body{
-            font-family: Arial;
-            background: #f4f4f4;
-            padding: 40px;
-        }
+body{
+    font-family: Arial, sans-serif;
+    background: #f8f8f8;
+}
 
-        .checkout-box{
-            background: white;
-            width: 400px;
-            margin: auto;
-            padding: 30px;
-            border-radius: 10px;
-        }
+/* CHECKOUT WRAPPER */
 
-        input, textarea{
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-        }
+.checkout-wrapper{
+    width: 90%;
+    max-width: 600px;
 
-        button{
-            width: 100%;
-            padding: 12px;
-            background: black;
-            color: white;
-            border: none;
-            margin-top: 10px;
-        }
+    margin: 120px auto;
 
-    </style>
+    background: white;
+
+    padding: 40px;
+
+    border-radius: 12px;
+}
+
+/* TITLES */
+
+.checkout-wrapper h1{
+    font-size: 40px;
+    margin-bottom: 20px;
+}
+
+.checkout-wrapper h3{
+    margin-bottom: 30px;
+    font-size: 22px;
+}
+
+/* FORM */
+
+.checkout-form{
+    display: flex;
+    flex-direction: column;
+}
+
+.checkout-form input,
+.checkout-form textarea{
+
+    width: 100%;
+
+    padding: 15px;
+
+    margin-bottom: 20px;
+
+    border: 1px solid #ddd;
+
+    font-size: 15px;
+
+    outline: none;
+}
+
+.checkout-form textarea{
+    min-height: 120px;
+    resize: none;
+}
+
+/* BUTTON */
+
+.checkout-btn{
+
+    padding: 15px;
+
+    background: black;
+
+    color: white;
+
+    border: none;
+
+    cursor: pointer;
+
+    font-size: 16px;
+
+    transition: 0.3s;
+}
+
+.checkout-btn:hover{
+    background: #333;
+}
+
+</style>
 </head>
 <body>
 
-<div class="checkout-box">
+<div class="checkout-wrapper">
 
     <h1>Checkout</h1>
 
-    <h3>Total: R<?php echo $total; ?></h3>
+    <h3>
+        Total: R<?php echo $total; ?>
+    </h3>
 
-    <form method="POST">
+    <form method="POST" class="checkout-form">
 
         <input type="text"
                name="phone"
@@ -124,8 +180,12 @@ if(isset($_POST['place_order'])){
                   placeholder="Delivery Address"
                   required></textarea>
 
-        <button type="submit" name="place_order">
+        <button type="submit"
+                name="place_order"
+                class="checkout-btn">
+
             Place Order
+
         </button>
 
     </form>

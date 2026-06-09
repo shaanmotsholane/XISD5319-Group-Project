@@ -17,37 +17,46 @@ session_start();
 
     <!-- **********NAVBAR********** -->
     <nav class="navbar">
-        <div class="logo"><a href="index.php">mustbedelah</a></div>
-        <ul class="navlist">
-            <li><a href="index.php">Home</a></li>
-            <li><a href="about.php">About</a></li>
-            <li><a href="shop.php">Shop</a></li>
-            <li><a href="about.php#contact">Contact Us</a></li>
-            <li><a href="#">Search</a></li>
 
-            <li><a href="cart.php">Cart</a></li>
+    <div class="logo">
+        <a href="index.php">mustbedelah</a>
+    </div>
 
-            <?php if(isset($_SESSION['name'])){ ?>
+    <ul class="nav-links">
 
-                <li>
-                    <a href="#">
-                        Welcome <?php echo $_SESSION['name']; ?>
-                    </a>
-                </li>
+        <li><a href="index.php">Home</a></li>
 
-                <li>
-                    <a href="logout.php">Logout</a>
-                </li>
+        <li><a href="shop.php">Shop</a></li>
 
-                <?php } else { ?>
+        <li><a href="about.php">About</a></li>
 
-                    <li>
-                        <a href="login.php">Sign In</a>
-                    </li>
+        <li><a href="about.php#contact">Contact</a></li>
 
-            <?php } ?>
-        </ul>
-    </nav>
+        <li><a href="cart.php">Cart</a></li>
+
+        <?php if(isset($_SESSION['name'])){ ?>
+
+            <li>
+                <a href="#">
+                    <?php echo $_SESSION['name']; ?>
+                </a>
+            </li>
+
+            <li>
+                <a href="logout.php">Logout</a>
+            </li>
+
+        <?php } else { ?>
+
+            <li>
+                <a href="login.php">Sign In</a>
+            </li>
+
+        <?php } ?>
+
+    </ul>
+
+</nav>
 
     <!-- This is for the opening picture  -->
     <section class="hero">
