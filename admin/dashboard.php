@@ -12,7 +12,7 @@ if(!isset($_SESSION['admin'])){
 <head>
 
 <title>Admin Dashboard</title>
-
+<link rel="icon" type="image/jpeg" href="../images/logo.jpeg">
 <style>
 
 body{

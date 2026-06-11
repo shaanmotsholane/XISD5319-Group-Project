@@ -23,7 +23,7 @@ $total = 0;
 <html>
 <head>
     <title>Cart</title>
-
+    <link rel="icon" type="image/jpeg" href="images/logo.jpeg">
     <style>
 
 body{

@@ -21,7 +21,38 @@ if(isset($_POST['add_product'])){
 
     mysqli_query($conn, $sql);
 
-    echo "Product Added Successfully";
+    /* FIREBASE INTEGRATION */
+
+        $firebase_url = "https://mustbedelah-5504b-default-rtdb.firebaseio.com/test_connection/".$product_name.".json";
+
+        $data = array(
+            "name" => $product_name,
+            "price" => (int)$price,
+            "description" => $description,
+            "image" => $image
+            );
+
+        $data_json = json_encode($data);
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $firebase_url);
+
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_json);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json'
+        ));
+
+        $response = curl_exec($ch);
+
+        curl_close($ch);
+
+        echo "Product Added Successfully";
 }
 ?>
 
@@ -30,7 +61,7 @@ if(isset($_POST['add_product'])){
 <head>
 
 <title>Add Product</title>
-
+<link rel="icon" type="image/jpeg" href="../images/logo.jpeg">
 <style>
 
 body{

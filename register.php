@@ -22,7 +22,7 @@ if(isset($_POST['register'])){
 <html>
 <head>
     <title>Register</title>
-
+    <link rel="icon" type="image/jpeg" href="images/logo.jpeg">
     <style>
 
         body{

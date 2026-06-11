@@ -21,7 +21,7 @@ $result = mysqli_query($conn, $sql);
 <html>
 <head>
     <title>View Orders</title>
-
+    <link rel="icon" type="image/jpeg" href="../images/logo.jpeg">
     <style>
 
         body{

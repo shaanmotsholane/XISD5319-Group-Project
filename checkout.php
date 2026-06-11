@@ -71,7 +71,7 @@ if(isset($_POST['place_order'])){
 <html>
 <head>
     <title>Checkout</title>
-
+    <link rel="icon" type="image/jpeg" href="images/logo.jpeg">
     <style>
 
 body{

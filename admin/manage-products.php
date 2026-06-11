@@ -17,7 +17,7 @@ $result = mysqli_query($conn, $sql);
 <html>
 <head>
     <title>Manage Products</title>
-
+    <link rel="icon" type="image/jpeg" href="../images/logo.jpeg">
     <a href="logout.php">Logout</a>
 
     <style>

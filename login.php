@@ -33,6 +33,7 @@ if(isset($_POST['login'])){
 <html>
 <head>
     <title>Login</title>
+    <link rel="icon" type="image/jpeg" href="images/logo.jpeg">
 
     <style>
 
@@ -85,7 +86,16 @@ if(isset($_POST['login'])){
         Login
     </button>
 
-    <a href="register.php">Or register here</a>
+    <p style="text-align:center; margin-top:15px;">
+        Don't have an account?
+        <a href="register.php">Register Here</a>
+    </p>
+
+    <p style="text-align:center; margin-top:10px;">
+        <a href="admin/login.php">
+        Login as Admin
+        </a>
+    </p>
 
 </form>
 

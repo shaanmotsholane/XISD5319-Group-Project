@@ -43,7 +43,7 @@ if(isset($_POST['update_product'])){
 <html>
 <head>
     <title>Edit Product</title>
-
+    <link rel="icon" type="image/jpeg" href="../images/logo.jpeg">
     <style>
 
         body{
