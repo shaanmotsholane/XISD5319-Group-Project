@@ -1,5 +1,24 @@
 <?php
 session_start();
+
+$cart_count = 0;
+
+if(isset($_SESSION['customer_id'])){
+
+    include 'config/db.php';
+
+    $customer_id = $_SESSION['customer_id'];
+
+    $cart_sql = "SELECT SUM(quantity) AS total_items
+                 FROM cart
+                 WHERE customer_id = '$customer_id'";
+
+    $cart_result = mysqli_query($conn, $cart_sql);
+
+    $cart_data = mysqli_fetch_assoc($cart_result);
+
+    $cart_count = $cart_data['total_items'] ?? 0;
+}
 ?>
 
 <!DOCTYPE html>
@@ -32,7 +51,11 @@ session_start();
 
         <li><a href="about.php#contact">Contact</a></li>
 
-        <li><a href="cart.php">Cart</a></li>
+        <li>
+            <a href="cart.php">
+                Cart (<?php echo $cart_count; ?>)
+            </a>
+        </li>
 
         <?php if(isset($_SESSION['name'])){ ?>
 
@@ -92,7 +115,7 @@ session_start();
             <!-- FIXED (anchor wrapping properly closed) -->
             <a href="shop.php">
                 <div class="card">
-                    <img src="images/DSC_0658.JPG" alt="Hoodies">
+                    <img src="images/sweat.jpeg" alt="Hoodies">
                     <h3>Hoodies & Jackets</h3>
                     <p>EXPLORE...</p>
                 </div>

@@ -11,7 +11,10 @@ if(isset($_POST['register'])){
             VALUES('$name', '$email', '$password')";
 
     if(mysqli_query($conn, $sql)){
-        echo "Registration Successful";
+
+        header("Location: login.php");
+        exit();
+
     }else{
         echo "Error: " . mysqli_error($conn);
     }

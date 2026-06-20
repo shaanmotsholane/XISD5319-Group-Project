@@ -9,7 +9,8 @@ if(!isset($_SESSION['customer_id'])){
 
 $customer_id = $_SESSION['customer_id'];
 
-$sql = "SELECT * FROM cart
+$sql = "SELECT cart.*, products.*
+        FROM cart
         INNER JOIN products
         ON cart.product_id = products.product_id
         WHERE cart.customer_id = '$customer_id'";
@@ -66,6 +67,17 @@ body{
     border-radius: 10px;
 }
 
+.cart-image{
+    width: 100px;
+    height: 100px;
+
+    object-fit: cover;
+
+    border-radius: 10px;
+
+    flex-shrink: 0;
+}
+
 /* PRODUCT INFO */
 
 .cart-info h3{
@@ -119,6 +131,33 @@ body{
     background: #333;
 }
 
+.quantity-controls{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    margin-top: 10px;
+}
+
+.quantity-controls button{
+    width: 35px;
+    height: 35px;
+
+    border: none;
+
+    background: black;
+    color: white;
+
+    border-radius: 50%;
+
+    cursor: pointer;
+}
+
+.quantity-controls span{
+    font-size: 18px;
+    font-weight: bold;
+}
+
 </style>
 </head>
 <body>
@@ -127,11 +166,24 @@ body{
     <h1>Your Cart</h1>
 </div>
 
+<?php
+if(isset($_GET['error']) && $_GET['error'] == 'empty'){
+    echo "<p style='text-align:center; color:red; margin-bottom:20px;'>
+            Your cart is empty.
+          </p>";
+}
+?>
+
 <div class="cart-container">
 
 <?php while($row = mysqli_fetch_assoc($result)){ ?>
 
 <div class="cart-item">
+
+    <img 
+        src="<?php echo $row['image']; ?>"
+        alt=""
+        class="cart-image">
 
     <div class="cart-info">
 
@@ -144,8 +196,32 @@ body{
         </p>
 
         <p>
-            Quantity: <?php echo $row['quantity']; ?>
+            Size: <?php echo $row['size']; ?>
         </p>
+
+        <p>
+            Colour: <?php echo $row['colour']; ?>
+        </p>
+
+        <div class="quantity-controls">
+
+            <a href="update-cart.php?cart_id=<?php echo $row['cart_id']; ?>&action=decrease">
+
+                <button>-</button>
+
+            </a>
+
+            <span>
+                <?php echo $row['quantity']; ?>
+            </span>
+
+            <a href="update-cart.php?cart_id=<?php echo $row['cart_id']; ?>&action=increase">
+
+                <button>+</button>
+
+            </a>
+
+        </div>
 
     </div>
 
@@ -160,9 +236,11 @@ body{
 </div>
 
 <?php
-$total += $row['price'];
+$total += $row['price'] * $row['quantity'];
 }
 ?>
+
+<?php if($total > 0){ ?>
 
 <div class="cart-total">
 
@@ -179,6 +257,24 @@ $total += $row['price'];
     </a>
 
 </div>
+
+<?php } else { ?>
+
+<div class="cart-total">
+
+    <h2>Your cart is empty.</h2>
+
+    <a href="shop.php">
+
+        <button class="checkout-btn">
+            Continue Shopping
+        </button>
+
+    </a>
+
+</div>
+
+<?php } ?>
 
 </div>
 

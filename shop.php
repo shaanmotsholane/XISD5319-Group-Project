@@ -1,3 +1,26 @@
+<?php
+session_start();
+
+include 'config/db.php';
+
+$cart_count = 0;
+
+if(isset($_SESSION['customer_id'])){
+
+    $customer_id = $_SESSION['customer_id'];
+
+    $cart_sql = "SELECT SUM(quantity) AS total_items
+                 FROM cart
+                 WHERE customer_id = '$customer_id'";
+
+    $cart_result = mysqli_query($conn, $cart_sql);
+
+    $cart_data = mysqli_fetch_assoc($cart_result);
+
+    $cart_count = $cart_data['total_items'] ?? 0;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -25,7 +48,11 @@
 
             <li><a href="index.php">Home</a></li>
 
-            <li><a href="cart.php">Cart</a></li>
+            <li>
+                <a href="cart.php">
+                    Cart (<?php echo $cart_count; ?>)
+                </a>
+            </li>
 
             <li><a href="about.php">About</a></li>
 
@@ -105,9 +132,21 @@
                     <?php echo $row['description']; ?>
                 </p>
 
-                <a href="add-to-cart.php?id=<?php echo $row['product_id']; ?>">
-                    <button>Add To Cart</button>
-                </a>
+                <?php if($row['stock_quantity'] > 0){ ?>
+
+                    <a href="product.php?id=<?php echo $row['product_id']; ?>">
+                        <button class="view-btn">
+                            View Product
+                        </button>
+                    </a>
+
+                <?php } else { ?>
+
+                    <button class="out-stock-btn" disabled>
+                        Out Of Stock
+                    </button>
+
+                <?php } ?>
 
                 <p>
                     Stock: <?php echo $row['stock_quantity']; ?>
