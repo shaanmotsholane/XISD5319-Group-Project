@@ -162,7 +162,7 @@ if(isset($_SESSION['customer_id'])){
 
     </section>
 
-    <!-- FOOTER -->
+        <!-- This is a footer for the website  -->
     <section>
 
         <footer>
@@ -188,6 +188,22 @@ if(isset($_SESSION['customer_id'])){
                 <li>Returns</li>
                 <li>Size Guide</li>
             </ul>
+
+            <div class="social-icons">
+
+                <a href="https://www.instagram.com/mustbedelah?igsh=d3l6bXB3emV2djFo" target="_blank">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+
+                <a href="https://www.tiktok.com/@mustbedelah" target="_blank">
+                    <i class="fa-brands fa-tiktok"></i>
+                </a>
+
+                <a href="https://www.facebook.com/MustBeDelah/" target="_blank">
+                    <i class="fa-brands fa-facebook-f"></i>
+                </a>
+
+            </div>
 
         </footer>
     </section>
