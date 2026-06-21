@@ -5,6 +5,7 @@
 <a href="orders.php">Orders</a>
 <a href="messages.php">Messages</a>
 <a href="reports.php">Reports</a>
+<a href="../index.php" target="_blank">View Website</a>
 <a href="logout.php">Logout</a>
 </div>
 <style>
