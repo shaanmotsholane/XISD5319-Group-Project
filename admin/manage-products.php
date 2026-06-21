@@ -52,6 +52,7 @@ $result = mysqli_query($conn, $sql);
     </style>
 </head>
 <body>
+<?php include 'admin-nav.php'; ?>
 
 <h1>Manage Products</h1>
 

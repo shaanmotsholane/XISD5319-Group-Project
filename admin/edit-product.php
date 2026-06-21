@@ -78,6 +78,7 @@ if(isset($_POST['update_product'])){
     </style>
 </head>
 <body>
+<?php include 'admin-nav.php'; ?>
 
 <form method="POST">
 

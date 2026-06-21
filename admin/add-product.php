@@ -15,10 +15,9 @@ if(isset($_POST['add_product'])){
     $description = $_POST['description'];
     $stock_quantity = $_POST['stock_quantity'];
     $image = $_POST['image'];
-    $size = $_POST['size'];
 
-    $sql = "INSERT INTO products(product_name, price, description, stock_quantity,size, image)
-            VALUES('$product_name', '$price', '$description', '$stock_quantity','$size', '$image')";
+    $sql = "INSERT INTO products(product_name, price, description, stock_quantity, image)
+            VALUES('$product_name', '$price', '$description', '$stock_quantity','$image')";
 
     mysqli_query($conn, $sql);
 
@@ -103,6 +102,7 @@ h1{
 </head>
 
 <body>
+<?php include 'admin-nav.php'; ?>
 
 <h1>Add Product</h1>
 

@@ -49,6 +49,7 @@ $result = mysqli_query($conn, $sql);
     </style>
 </head>
 <body>
+<?php include 'admin-nav.php'; ?>
 
 <h1>Customer Orders</h1>
 
@@ -56,10 +57,13 @@ $result = mysqli_query($conn, $sql);
 
 <tr>
     <th>Order ID</th>
+    <th>Reference</th>
     <th>Customer Name</th>
     <th>Email</th>
+    <th>Items</th>
     <th>Total Amount</th>
     <th>Order Date</th>
+    
 </tr>
 
 <?php while($row = mysqli_fetch_assoc($result)){ ?>
@@ -71,11 +75,44 @@ $result = mysqli_query($conn, $sql);
     </td>
 
     <td>
+        <strong>
+            <?php echo $row['order_reference']; ?>
+        </strong>
+    </td>
+
+    <td>
         <?php echo $row['name']; ?>
     </td>
 
     <td>
         <?php echo $row['email']; ?>
+    </td>
+
+    <td>
+
+        <?php
+
+            $items_sql = "SELECT order_items.*, products.product_name
+                        FROM order_items
+                        INNER JOIN products
+                        ON order_items.product_id = products.product_id
+                        WHERE order_items.order_id = '{$row['order_id']}'";
+
+            $items_result = mysqli_query($conn, $items_sql);
+
+            while($item = mysqli_fetch_assoc($items_result)){
+
+                    echo $item['product_name'];
+
+                    echo " (" . $item['size'] . ")";
+
+                    echo " × " . $item['quantity'];
+
+                    echo "<br>";
+                    }
+
+        ?>
+
     </td>
 
     <td>

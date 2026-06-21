@@ -22,7 +22,17 @@ if(mysqli_num_rows($cart_result) == 0){
     exit();
 }
 
-$sql = "SELECT * FROM cart
+$sql = "SELECT
+            cart.cart_id,
+            cart.product_id,
+            cart.quantity,
+            cart.size,
+            cart.colour,
+            products.product_name,
+            products.price,
+            products.image,
+            products.stock_quantity
+        FROM cart
         INNER JOIN products
         ON cart.product_id = products.product_id
         WHERE cart.customer_id = '$customer_id'";
@@ -52,12 +62,45 @@ if(isset($_POST['place_order'])){
 
     mysqli_query($conn, $update_customer);
 
-    $order_sql = "INSERT INTO orders(customer_id, total_amount)
-                  VALUES('$customer_id', '$total')";
+    $order_reference = "MBD-" . strtoupper(substr(md5(uniqid()), 0, 8));
+
+    $order_sql = "INSERT INTO orders(customer_id, order_reference, total_amount)
+                    VALUES('$customer_id', '$order_reference', '$total')";
 
     mysqli_query($conn, $order_sql);
 
+    $order_id = mysqli_insert_id($conn);
+
     foreach($cart_items as $item){
+
+    $product_id = $item['product_id'];
+
+    $quantity = $item['quantity'];
+
+    $size = $item['size'];
+
+    $colour = $item['colour'];
+
+    $price = $item['price'];
+
+    $order_item_sql = "INSERT INTO order_items(
+                        order_id,
+                        product_id,
+                        quantity,
+                        size,
+                        colour,
+                        price
+                    )
+                    VALUES(
+                        '$order_id',
+                        '$product_id',
+                        '$quantity',
+                        '$size',
+                        '$colour',
+                        '$price'
+                    )";
+
+    mysqli_query($conn, $order_item_sql);
 
     $product_id = $item['product_id'];
 
@@ -75,7 +118,8 @@ if(isset($_POST['place_order'])){
 
     mysqli_query($conn, $clear_cart);
 
-    header("Location: order-success.php");
+    header("Location: order-success.php?ref=" . $order_reference);
+exit();
 }
 ?>
 
@@ -84,6 +128,7 @@ if(isset($_POST['place_order'])){
 <head>
     <title>Checkout</title>
     <link rel="icon" type="image/jpeg" href="images/logo.jpeg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
 
 body{

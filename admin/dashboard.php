@@ -48,6 +48,7 @@ h1{
 </head>
 
 <body>
+<?php include 'admin-nav.php'; ?>
 
 <div class="dashboard">
 
@@ -65,10 +66,15 @@ h1{
         View Orders
     </a>
 
+    <a href="messages.php">
+        Messages
+    </a>
+
     <a href="logout.php">
         Logout
     </a>
 
+<a href="reports.php">Reports</a>
 </div>
 
 </body>

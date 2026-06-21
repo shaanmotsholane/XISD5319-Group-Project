@@ -3,16 +3,21 @@ include 'config/db.php';
 
 if(isset($_POST['send_message'])){
 
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $message = $_POST['message'];
+    $name = mysqli_real_escape_string($conn, $_POST['name']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $message = mysqli_real_escape_string($conn, $_POST['message']);
 
     $sql = "INSERT INTO contact_messages(name, email, message)
             VALUES('$name', '$email', '$message')";
 
-    mysqli_query($conn, $sql);
+    if(mysqli_query($conn, $sql)){
 
-    echo "Message Sent Successfully";
+        echo "Message Sent Successfully";
+
+    }else{
+
+        die("SQL Error: " . mysqli_error($conn));
+    }
 }
 ?>
 
@@ -108,11 +113,19 @@ if(isset($_POST['send_message'])){
             <input type="email" placeholder="Email address" required name = "email">
 
             <!-- removed spacing inside textarea -->
-            <textarea name = "mesage" placeholder="Enter your question or message"></textarea>
+            <textarea
+                name="message"
+                placeholder="Enter your question or message"
+                required></textarea>
 
             
-            <button type="submit" class="submit-btn">
+            <button
+                type="submit"
+                name="send_message"
+                class="submit-btn">
+
                 Submit
+
             </button>
 
         </form>
@@ -150,7 +163,6 @@ if(isset($_POST['send_message'])){
     </section>
 
     
-    <script src="script.js"></script>
 
 </body>
 

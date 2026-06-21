@@ -26,6 +26,7 @@ if(isset($_POST['register'])){
 <head>
     <title>Register</title>
     <link rel="icon" type="image/jpeg" href="images/logo.jpeg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
 
         body{

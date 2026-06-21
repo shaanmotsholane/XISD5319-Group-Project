@@ -29,6 +29,7 @@ if(isset($_SESSION['customer_id'])){
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mustbedelah</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/jpeg" href="images/logo.jpeg">
 </head>
 
@@ -63,6 +64,10 @@ if(isset($_SESSION['customer_id'])){
                 <a href="#">
                     <?php echo $_SESSION['name']; ?>
                 </a>
+            </li>
+
+            <li>
+                <a href="my-orders.php">My Orders</a>
             </li>
 
             <li>
@@ -200,6 +205,22 @@ if(isset($_SESSION['customer_id'])){
                 <li>Returns</li>
                 <li>Size Guide</li>
             </ul>
+
+            <div class="social-icons">
+
+                <a href="https://www.instagram.com/mustbedelah?igsh=d3l6bXB3emV2djFo" target="_blank">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+
+                <a href="https://www.tiktok.com/@mustbedelah" target="_blank">
+                    <i class="fa-brands fa-tiktok"></i>
+                </a>
+
+                <a href="https://www.facebook.com/MustBeDelah/" target="_blank">
+                    <i class="fa-brands fa-facebook-f"></i>
+                </a>
+
+            </div>
 
         </footer>
     </section>

@@ -1,3 +1,7 @@
+<?php
+$order_reference = $_GET['ref'] ?? '';
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,6 +9,7 @@
     <title>Order Successful</title>
 
     <link rel="icon" type="image/jpeg" href="images/logo.jpeg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
 
@@ -82,6 +87,37 @@
             margin: 30px 0;
         }
 
+        .order-reference{
+
+        background: #f5f5f5;
+
+        padding: 20px;
+
+        border-radius: 10px;
+
+        margin: 25px 0;
+
+        border-left: 5px solid #28a745;
+        }
+
+        .order-reference p{
+
+        margin-bottom: 10px;
+
+        color: #666;
+
+        font-size: 14px;
+        }
+
+        .order-reference h2{
+
+        color: #111;
+
+        letter-spacing: 2px;
+
+        margin: 0;
+        }
+
         .continue-btn{
 
             display: inline-block;
@@ -119,6 +155,18 @@
         <p>
             Thank you for shopping with MustBeDelah.
         </p>
+
+        <?php if($order_reference){ ?>
+
+            <div class="order-reference">
+
+                <p>Your Order Reference</p>
+
+                <h2><?php echo $order_reference; ?></h2>
+
+            </div>
+
+        <?php } ?>
 
         <div class="order-message">
 
