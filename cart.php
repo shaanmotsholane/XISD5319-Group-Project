@@ -3,8 +3,9 @@ session_start();
 
 include 'config/db.php';
 
-if(!isset($_SESSION['customer_id'])){
+if (!isset($_SESSION['customer_id'])) {
     header("Location: login.php");
+    exit();
 }
 
 $customer_id = $_SESSION['customer_id'];
@@ -34,258 +35,236 @@ $total = 0;
     <title>Cart</title>
     <link rel="icon" type="image/jpeg" href="images/logo.jpeg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-
-body{
-    font-family: Arial, sans-serif;
-    background: #f8f8f8;
-}
-
-/* PAGE TITLE */
-
-.cart-title{
-    text-align: center;
-    padding: 120px 20px 40px;
-}
-
-.cart-title h1{
-    font-size: 45px;
-    letter-spacing: 2px;
-}
-
-/* CART CONTAINER */
-
-.cart-container{
-    width: 90%;
-    max-width: 1100px;
-    margin: auto;
-}
-
-/* CART ITEM */
-
-.cart-item{
-    background: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    padding: 25px;
-
-    margin-bottom: 20px;
-
-    border-radius: 10px;
-}
-
-.cart-image{
-    width: 100px;
-    height: 100px;
-
-    object-fit: cover;
-
-    border-radius: 10px;
-
-    flex-shrink: 0;
-}
-
-/* PRODUCT INFO */
-
-.cart-info h3{
-    font-size: 22px;
-    margin-bottom: 10px;
-}
-
-.cart-info p{
-    margin-bottom: 8px;
-}
-
-/* BUTTONS */
-
-.cart-actions a button{
-    padding: 10px 20px;
-    border: none;
-    background: black;
-    color: white;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.cart-actions a button:hover{
-    background: #333;
-}
-
-/* TOTAL SECTION */
-
-.cart-total{
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: right;
-    margin-top: 30px;
-}
-
-.cart-total h2{
-    margin-bottom: 20px;
-}
-
-.checkout-btn{
-    padding: 15px 30px;
-    border: none;
-    background: black;
-    color: white;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.checkout-btn:hover{
-    background: #333;
-}
-
-.quantity-controls{
-    display: flex;
-    align-items: center;
-    gap: 15px;
-
-    margin-top: 10px;
-}
-
-.quantity-controls button{
-    width: 35px;
-    height: 35px;
-
-    border: none;
-
-    background: black;
-    color: white;
-
-    border-radius: 50%;
-
-    cursor: pointer;
-}
-
-.quantity-controls span{
-    font-size: 18px;
-    font-weight: bold;
-}
-
-</style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="cart-title">
-    <h1>Your Cart</h1>
-</div>
+<?php include 'includes/header.php'; ?>
 
-<?php
-if(isset($_GET['error']) && $_GET['error'] == 'empty'){
-    echo "<p style='text-align:center; color:red; margin-bottom:20px;'>
-            Your cart is empty.
-          </p>";
-}
-?>
+<main class="cart-page">
 
-<div class="cart-container">
+    <div class="cart-container">
 
-<?php while($row = mysqli_fetch_assoc($result)){ ?>
+        <div class="cart-heading">
 
-<div class="cart-item">
+            <div>
+                <h1>Your Cart</h1>
 
-    <img 
-        src="<?php echo $row['image']; ?>"
-        alt=""
-        class="cart-image">
+                <p>
+                    Review your selected items before proceeding to checkout.
+                </p>
+            </div>
 
-    <div class="cart-info">
-
-        <h3>
-            <?php echo $row['product_name']; ?>
-        </h3>
-
-        <p>
-            Price: R<?php echo $row['price']; ?>
-        </p>
-
-        <p>
-            Size: <?php echo $row['size']; ?>
-        </p>
-
-        <p>
-            Colour: <?php echo $row['colour']; ?>
-        </p>
-
-        <div class="quantity-controls">
-
-            <a href="update-cart.php?cart_id=<?php echo $row['cart_id']; ?>&action=decrease">
-
-                <button>-</button>
-
+            <a href="shop.php" class="cart-shopping-link">
+                <i class="fa-solid fa-arrow-left"></i>
+                Continue Shopping
             </a>
 
-            <span>
-                <?php echo $row['quantity']; ?>
-            </span>
+        </div>
 
-            <a href="update-cart.php?cart_id=<?php echo $row['cart_id']; ?>&action=increase">
+        <?php if (
+            isset($_GET['error']) &&
+            $_GET['error'] === 'empty'
+        ) { ?>
 
-                <button>+</button>
+            <div class="cart-message cart-error-message">
 
-            </a>
+                <i class="fa-solid fa-circle-exclamation"></i>
+
+                Your cart is empty. Add a product before proceeding to checkout.
+
+            </div>
+
+        <?php } ?>
+
+        <div class="cart-layout">
+
+            <section class="cart-items-section">
+
+                <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+
+                    <?php
+                    $item_total = $row['price'] * $row['quantity'];
+                    $total += $item_total;
+                    ?>
+
+                    <article class="cart-item">
+
+                        <a
+                            href="product.php?id=<?php echo (int) $row['product_id']; ?>"
+                            class="cart-image-link"
+                        >
+
+                            <img
+                                src="<?php echo htmlspecialchars($row['image']); ?>"
+                                alt="<?php echo htmlspecialchars($row['product_name']); ?>"
+                                class="cart-image"
+                            >
+
+                        </a>
+
+                        <div class="cart-info">
+
+                            <a
+                                href="product.php?id=<?php echo (int) $row['product_id']; ?>"
+                                class="cart-product-name"
+                            >
+                                <?php echo htmlspecialchars($row['product_name']); ?>
+                            </a>
+
+                            <div class="cart-product-options">
+
+                                <span>
+                                    Size:
+                                    <strong>
+                                        <?php echo htmlspecialchars($row['size']); ?>
+                                    </strong>
+                                </span>
+
+                                <span>
+                                    Colour:
+                                    <strong>
+                                        <?php echo htmlspecialchars($row['colour']); ?>
+                                    </strong>
+                                </span>
+
+                            </div>
+
+                            <p class="cart-unit-price">
+                                R<?php echo number_format((float) $row['price'], 2); ?>
+                                each
+                            </p>
+
+                            <div class="quantity-controls">
+
+                                <a
+                                    href="update-cart.php?cart_id=<?php echo (int) $row['cart_id']; ?>&action=decrease"
+                                    class="quantity-button"
+                                    aria-label="Decrease quantity"
+                                >
+                                    <i class="fa-solid fa-minus"></i>
+                                </a>
+
+                                <span class="quantity-value">
+                                    <?php echo (int) $row['quantity']; ?>
+                                </span>
+
+                                <a
+                                    href="update-cart.php?cart_id=<?php echo (int) $row['cart_id']; ?>&action=increase"
+                                    class="quantity-button"
+                                    aria-label="Increase quantity"
+                                >
+                                    <i class="fa-solid fa-plus"></i>
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                        <div class="cart-item-right">
+
+                            <strong class="cart-item-price">
+                                R<?php echo number_format($item_total, 2); ?>
+                            </strong>
+
+                            <a
+                                href="remove-from-cart.php?id=<?php echo (int) $row['cart_id']; ?>"
+                                class="cart-remove-link"
+                                aria-label="Remove <?php echo htmlspecialchars($row['product_name']); ?> from cart"
+                            >
+                                <i class="fa-regular fa-trash-can"></i>
+                                Remove
+                            </a>
+
+                        </div>
+
+                    </article>
+
+                <?php } ?>
+
+                <?php if ($total <= 0) { ?>
+
+                    <div class="empty-cart">
+
+                        <i class="fa-solid fa-cart-shopping"></i>
+
+                        <h2>Your cart is empty</h2>
+
+                        <p>
+                            Browse the shop and add products to your cart.
+                        </p>
+
+                        <a href="shop.php" class="btn">
+                            Start Shopping
+                        </a>
+
+                    </div>
+
+                <?php } ?>
+
+            </section>
+
+            <?php if ($total > 0) { ?>
+
+                <aside class="cart-summary">
+
+                    <h2>Order Summary</h2>
+
+                    <div class="cart-summary-row">
+
+                        <span>Subtotal</span>
+
+                        <span>
+                            R<?php echo number_format($total, 2); ?>
+                        </span>
+
+                    </div>
+
+                    <div class="cart-summary-row">
+
+                        <span>Delivery</span>
+
+                        <span>Calculated at checkout</span>
+
+                    </div>
+
+                    <div class="cart-summary-total">
+
+                        <span>Total</span>
+
+                        <strong>
+                            R<?php echo number_format($total, 2); ?>
+                        </strong>
+
+                    </div>
+
+                    <a href="checkout.php" class="btn cart-checkout-button">
+
+                        Proceed to Checkout
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </a>
+
+                    <p class="cart-summary-note">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                        Secure checkout
+
+                    </p>
+
+                </aside>
+
+            <?php } ?>
 
         </div>
 
     </div>
 
-    <div class="cart-actions">
+</main>
 
-        <a href="remove-from-cart.php?id=<?php echo $row['cart_id']; ?>">
-            <button>Remove</button>
-        </a>
-
-    </div>
-
-</div>
-
-<?php
-$total += $row['price'] * $row['quantity'];
-}
-?>
-
-<?php if($total > 0){ ?>
-
-<div class="cart-total">
-
-    <h2>
-        Total: R<?php echo $total; ?>
-    </h2>
-
-    <a href="checkout.php">
-
-        <button class="checkout-btn">
-            Proceed To Checkout
-        </button>
-
-    </a>
-
-</div>
-
-<?php } else { ?>
-
-<div class="cart-total">
-
-    <h2>Your cart is empty.</h2>
-
-    <a href="shop.php">
-
-        <button class="checkout-btn">
-            Continue Shopping
-        </button>
-
-    </a>
-
-</div>
-
-<?php } ?>
-
-</div>
+<?php include 'includes/footer.php'; ?>
 
 </body>
 </html>

@@ -1,190 +1,229 @@
 <?php
-$order_reference = $_GET['ref'] ?? '';
+session_start();
+
+if (!isset($_SESSION['customer_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
+include 'config/db.php';
+
+$customer_id = (int) $_SESSION['customer_id'];
+$order_reference = trim($_GET['ref'] ?? '');
+$order = null;
+
+/*
+|--------------------------------------------------------------------------
+| Confirm that the order belongs to the customer
+|--------------------------------------------------------------------------
+*/
+
+if ($order_reference !== '') {
+
+    $sql = "SELECT
+                order_reference,
+                total_amount,
+                order_date
+            FROM orders
+            WHERE order_reference = ?
+              AND customer_id = ?
+            LIMIT 1";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    if ($stmt) {
+
+        mysqli_stmt_bind_param(
+            $stmt,
+            "si",
+            $order_reference,
+            $customer_id
+        );
+
+        mysqli_stmt_execute($stmt);
+
+        $result = mysqli_stmt_get_result($stmt);
+        $order = mysqli_fetch_assoc($result);
+
+        mysqli_stmt_close($stmt);
+    }
+}
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
 
-    <title>Order Successful</title>
+    <meta charset="UTF-8">
 
-    <link rel="icon" type="image/jpeg" href="images/logo.jpeg">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <style>
+    <title>Order Successful | Mustbedelah</title>
 
-        *{
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
+    <link
+        rel="icon"
+        type="image/jpeg"
+        href="images/logo.jpeg"
+    >
 
-        body{
-            background: #f8f8f8;
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    >
 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            min-height: 100vh;
-        }
-
-        .success-container{
-
-            background: white;
-
-            width: 90%;
-            max-width: 600px;
-
-            padding: 50px;
-
-            border-radius: 15px;
-
-            text-align: center;
-
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .success-icon{
-
-            width: 90px;
-            height: 90px;
-
-            background: #28a745;
-
-            color: white;
-
-            border-radius: 50%;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 45px;
-
-            margin: 0 auto 25px;
-        }
-
-        h1{
-            margin-bottom: 20px;
-            color: #111;
-        }
-
-        p{
-            color: #666;
-            line-height: 1.7;
-            margin-bottom: 15px;
-        }
-
-        .order-message{
-            background: #f5f5f5;
-
-            padding: 20px;
-
-            border-radius: 10px;
-
-            margin: 30px 0;
-        }
-
-        .order-reference{
-
-        background: #f5f5f5;
-
-        padding: 20px;
-
-        border-radius: 10px;
-
-        margin: 25px 0;
-
-        border-left: 5px solid #28a745;
-        }
-
-        .order-reference p{
-
-        margin-bottom: 10px;
-
-        color: #666;
-
-        font-size: 14px;
-        }
-
-        .order-reference h2{
-
-        color: #111;
-
-        letter-spacing: 2px;
-
-        margin: 0;
-        }
-
-        .continue-btn{
-
-            display: inline-block;
-
-            padding: 15px 30px;
-
-            background: black;
-            color: white;
-
-            border-radius: 8px;
-
-            text-decoration: none;
-
-            transition: 0.3s;
-        }
-
-        .continue-btn:hover{
-            background: #333;
-        }
-
-    </style>
+    <link rel="stylesheet" href="style.css">
 
 </head>
 
 <body>
 
-    <div class="success-container">
+<?php include 'includes/header.php'; ?>
 
-        <div class="success-icon">
-            ✓
-        </div>
+<main class="order-success-page">
 
-        <h1>Order Placed Successfully</h1>
+    <section class="success-container">
 
-        <p>
-            Thank you for shopping with MustBeDelah.
-        </p>
+        <?php if ($order) { ?>
 
-        <?php if($order_reference){ ?>
+            <div class="success-icon">
 
-            <div class="order-reference">
+                <i class="fa-solid fa-check"></i>
 
-                <p>Your Order Reference</p>
+            </div>
 
-                <h2><?php echo $order_reference; ?></h2>
+            <p class="success-label">
+                Order confirmed
+            </p>
+
+            <h1>Thank You for Your Order</h1>
+
+            <p class="success-introduction">
+                Your order has been received and is now being processed.
+            </p>
+
+            <div class="success-order-details">
+
+                <div class="success-detail">
+
+                    <span>Order reference</span>
+
+                    <strong>
+                        <?php
+                        echo htmlspecialchars(
+                            $order['order_reference']
+                        );
+                        ?>
+                    </strong>
+
+                </div>
+
+                <div class="success-detail">
+
+                    <span>Order date</span>
+
+                    <strong>
+                        <?php
+                        echo date(
+                            "d M Y",
+                            strtotime($order['order_date'])
+                        );
+                        ?>
+                    </strong>
+
+                </div>
+
+                <div class="success-detail">
+
+                    <span>Order total</span>
+
+                    <strong>
+                        R<?php
+                        echo number_format(
+                            (float) $order['total_amount'],
+                            2
+                        );
+                        ?>
+                    </strong>
+
+                </div>
+
+            </div>
+
+            <div class="success-message">
+
+                <i class="fa-solid fa-box"></i>
+
+                <div>
+
+                    <h2>What happens next?</h2>
+
+                    <p>
+                        We will process your order and provide delivery updates
+                        when they become available.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="success-actions">
+
+                <a href="my-orders.php" class="btn">
+
+                    <i class="fa-solid fa-receipt"></i>
+
+                    View My Orders
+
+                </a>
+
+                <a href="shop.php" class="success-secondary-button">
+
+                    <i class="fa-solid fa-bag-shopping"></i>
+
+                    Continue Shopping
+
+                </a>
+
+            </div>
+
+        <?php } else { ?>
+
+            <div class="success-error-icon">
+
+                <i class="fa-solid fa-circle-exclamation"></i>
+
+            </div>
+
+            <h1>Order Details Not Found</h1>
+
+            <p class="success-introduction">
+                We could not find an order matching this reference.
+            </p>
+
+            <div class="success-actions">
+
+                <a href="my-orders.php" class="btn">
+                    View My Orders
+                </a>
+
+                <a href="shop.php" class="success-secondary-button">
+                    Return to Shop
+                </a>
 
             </div>
 
         <?php } ?>
 
-        <div class="order-message">
+    </section>
 
-            <p>
-                Your order has been received and is being processed.
-            </p>
+</main>
 
-            <p>
-                You will receive updates regarding your delivery soon.
-            </p>
-
-        </div>
-
-        <a href="shop.php" class="continue-btn">
-            Continue Shopping
-        </a>
-
-    </div>
+<?php include 'includes/footer.php'; ?>
 
 </body>
+
 </html>

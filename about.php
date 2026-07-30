@@ -31,6 +31,7 @@ if(isset($_POST['send_message'])){
     <title>About - mustbedelah</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/jpeg" href="images/logo.jpeg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 </head>
 
@@ -38,27 +39,7 @@ if(isset($_POST['send_message'])){
 
     <!-- NAVBAR -->
 
-    <nav class="navbar">
-
-        <div class="logo">
-            <a href="index.php">
-                mustbedelah
-            </a>
-        </div>
-
-        <ul class="nav-links">
-
-            <li><a href="index.php">Home</a></li>
-
-            <li><a href="shop.php">Shop</a></li>
-
-            <li><a href="about.php#contact">
-                    Contact
-                </a></li>
-
-        </ul>
-
-    </nav>
+    <?php include 'includes/header.php'; ?>
 
     <!-- ABOUT SECTION -->
 
@@ -134,48 +115,7 @@ if(isset($_POST['send_message'])){
 
     <!-- This is a footer for the website  -->
     <section>
-
-        <footer>
-
-            <h5>mustbedelah</h5>
-
-            <ul class="list1">
-                <li class="Top">Shop</li>
-                <li>New Drops</li>
-                <li>Hoodies & Tees</li>
-                <li>Bottoms</li>
-            </ul>
-
-            <ul class="list2">
-                <li class="Top">Company</li>
-                <li>About us</li>
-                <li>Contact us</li>
-            </ul>
-
-            <ul class="list3">
-                <li class="Top">Help</li>
-                <li>Shipping</li>
-                <li>Returns</li>
-                <li>Size Guide</li>
-            </ul>
-
-            <div class="social-icons">
-
-                <a href="https://www.instagram.com/mustbedelah?igsh=d3l6bXB3emV2djFo" target="_blank">
-                    <i class="fa-brands fa-instagram"></i>
-                </a>
-
-                <a href="https://www.tiktok.com/@mustbedelah" target="_blank">
-                    <i class="fa-brands fa-tiktok"></i>
-                </a>
-
-                <a href="https://www.facebook.com/MustBeDelah/" target="_blank">
-                    <i class="fa-brands fa-facebook-f"></i>
-                </a>
-
-            </div>
-
-        </footer>
+       <?php include 'includes/footer.php'; ?>
     </section>
 
     

@@ -129,319 +129,256 @@ exit();
     <title>Checkout</title>
     <link rel="icon" type="image/jpeg" href="images/logo.jpeg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-
-body{
-    font-family: Arial, sans-serif;
-    background: #f8f8f8;
-}
-
-/* CHECKOUT WRAPPER */
-
-.checkout-wrapper{
-    width: 90%;
-    max-width: 600px;
-
-    margin: 120px auto;
-
-    background: white;
-
-    padding: 40px;
-
-    border-radius: 12px;
-}
-
-/* TITLES */
-
-.checkout-wrapper h1{
-    font-size: 40px;
-    margin-bottom: 20px;
-}
-
-.checkout-wrapper h3{
-    margin-bottom: 30px;
-    font-size: 22px;
-}
-
-/* FORM */
-
-.checkout-form{
-    display: flex;
-    flex-direction: column;
-}
-
-.checkout-form input,
-.checkout-form textarea{
-
-    width: 100%;
-
-    padding: 15px;
-
-    margin-bottom: 20px;
-
-    border: 1px solid #ddd;
-
-    font-size: 15px;
-
-    outline: none;
-}
-
-.checkout-form textarea{
-    min-height: 120px;
-    resize: none;
-}
-
-/* BUTTON */
-
-.checkout-btn{
-
-    padding: 15px;
-
-    background: black;
-
-    color: white;
-
-    border: none;
-
-    cursor: pointer;
-
-    font-size: 16px;
-
-    transition: 0.3s;
-}
-
-.checkout-btn:hover{
-    background: #333;
-}
-
-/* CHECKOUT ITEMS */
-
-.checkout-item{
-    display: flex;
-    align-items: center;
-
-    gap: 20px;
-
-    padding: 15px;
-
-    margin-bottom: 20px;
-
-    background: #f8f8f8;
-
-    border-radius: 10px;
-}
-
-.checkout-image{
-    width: 80px;
-    height: 80px;
-
-    object-fit: cover;
-
-    border-radius: 10px;
-}
-
-.checkout-info{
-    flex: 1;
-}
-
-.checkout-info h4{
-    margin-bottom: 8px;
-}
-
-.checkout-info p{
-    margin-bottom: 5px;
-    color: #555;
-}
-
-/* PAYMENT */
-
-.checkout-form select{
-    width: 100%;
-
-    padding: 15px;
-
-    margin-bottom: 20px;
-
-    border: 1px solid #ddd;
-
-    font-size: 15px;
-}
-
-.card-row{
-    display: flex;
-    gap: 15px;
-}
-
-.card-row input{
-    flex: 1;
-}/* CHECKOUT ITEMS */
-
-.checkout-item{
-    display: flex;
-    align-items: center;
-
-    gap: 20px;
-
-    padding: 15px;
-
-    margin-bottom: 20px;
-
-    background: #f8f8f8;
-
-    border-radius: 10px;
-}
-
-.checkout-image{
-    width: 80px;
-    height: 80px;
-
-    object-fit: cover;
-
-    border-radius: 10px;
-}
-
-.checkout-info{
-    flex: 1;
-}
-
-.checkout-info h4{
-    margin-bottom: 8px;
-}
-
-.checkout-info p{
-    margin-bottom: 5px;
-    color: #555;
-}
-
-/* PAYMENT */
-
-.checkout-form select{
-    width: 100%;
-
-    padding: 15px;
-
-    margin-bottom: 20px;
-
-    border: 1px solid #ddd;
-
-    font-size: 15px;
-}
-
-.card-row{
-    display: flex;
-    gap: 15px;
-}
-
-.card-row input{
-    flex: 1;
-}
-
-</style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="checkout-wrapper">
+<?php include 'includes/header.php'; ?>
 
-    <h1>Checkout</h1>
+<main class="checkout-page">
 
-    <h3>
-        Total: R<?php echo $total; ?>
-    </h3>
+    <div class="checkout-container">
 
-    <?php foreach($cart_items as $item){ ?>
+        <section class="checkout-summary">
 
-    <div class="checkout-item">
+            <h1>Checkout</h1>
 
-        <img
-            src="<?php echo $item['image']; ?>"
-            alt=""
-            class="checkout-image">
-
-        <div class="checkout-info">
-
-            <h4><?php echo $item['product_name']; ?></h4>
-
-            <p>Size: <?php echo $item['size']; ?></p>
-
-            <p>Colour: <?php echo $item['colour']; ?></p>
-
-            <p>Quantity: <?php echo $item['quantity']; ?></p>
-
-            <p>
-                R<?php echo $item['price'] * $item['quantity']; ?>
+            <p class="checkout-intro">
+                Review your items and enter your delivery information.
             </p>
 
-        </div>
+            <div class="checkout-items">
+
+                <?php foreach ($cart_items as $item) { ?>
+
+                    <div class="checkout-item">
+
+                        <img
+                            src="<?php echo htmlspecialchars($item['image']); ?>"
+                            alt="<?php echo htmlspecialchars($item['product_name']); ?>"
+                            class="checkout-image"
+                        >
+
+                        <div class="checkout-info">
+
+                            <h3>
+                                <?php echo htmlspecialchars($item['product_name']); ?>
+                            </h3>
+
+                            <p>
+                                Size:
+                                <strong>
+                                    <?php echo htmlspecialchars($item['size']); ?>
+                                </strong>
+                            </p>
+
+                            <p>
+                                Colour:
+                                <strong>
+                                    <?php echo htmlspecialchars($item['colour']); ?>
+                                </strong>
+                            </p>
+
+                            <p>
+                                Quantity:
+                                <strong>
+                                    <?php echo (int) $item['quantity']; ?>
+                                </strong>
+                            </p>
+
+                        </div>
+
+                        <div class="checkout-item-price">
+                            R<?php
+                            echo number_format(
+                                $item['price'] * $item['quantity'],
+                                2
+                            );
+                            ?>
+                        </div>
+
+                    </div>
+
+                <?php } ?>
+
+            </div>
+
+            <div class="checkout-total">
+
+                <span>Order Total</span>
+
+                <strong>
+                    R<?php echo number_format($total, 2); ?>
+                </strong>
+
+            </div>
+
+        </section>
+
+        <section class="checkout-details">
+
+            <h2>Delivery and Payment</h2>
+
+            <form method="POST" class="checkout-form">
+
+                <div class="form-group">
+
+                    <label for="phone">
+                        Phone Number
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        placeholder="Enter your phone number"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="address">
+                        Delivery Address
+                    </label>
+
+                    <textarea
+                        id="address"
+                        name="address"
+                        placeholder="Enter your full delivery address"
+                        required
+                    ></textarea>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="payment_method">
+                        Payment Method
+                    </label>
+
+                    <select
+                        id="payment_method"
+                        name="payment_method"
+                        required
+                    >
+
+                        <option value="">
+                            Select payment method
+                        </option>
+
+                        <option value="Credit Card">
+                            Credit Card
+                        </option>
+
+                        <option value="Debit Card">
+                            Debit Card
+                        </option>
+
+                        <option value="EFT">
+                            EFT
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="card_name">
+                        Name on Card
+                    </label>
+
+                    <input
+                        type="text"
+                        id="card_name"
+                        name="card_name"
+                        placeholder="Enter the cardholder's name"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="card_number">
+                        Card Number
+                    </label>
+
+                    <input
+                        type="text"
+                        id="card_number"
+                        name="card_number"
+                        placeholder="Enter the card number"
+                        maxlength="16"
+                        inputmode="numeric"
+                        required
+                    >
+
+                </div>
+
+                <div class="card-row">
+
+                    <div class="form-group">
+
+                        <label for="expiry">
+                            Expiry Date
+                        </label>
+
+                        <input
+                            type="text"
+                            id="expiry"
+                            name="expiry"
+                            placeholder="MM/YY"
+                            maxlength="5"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="cvv">
+                            CVV
+                        </label>
+
+                        <input
+                            type="password"
+                            id="cvv"
+                            name="cvv"
+                            placeholder="CVV"
+                            maxlength="3"
+                            inputmode="numeric"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+                <p class="payment-notice">
+                    <i class="fa-solid fa-lock"></i>
+                    This is a simulated payment form for the project.
+                </p>
+
+                <button
+                    type="submit"
+                    name="place_order"
+                    class="checkout-btn"
+                >
+                    Place Order
+                </button>
+
+            </form>
+
+        </section>
 
     </div>
 
-    <?php } ?>
+</main>
 
-    <form method="POST" class="checkout-form">
-
-        <input type="text"
-               name="phone"
-               placeholder="Phone Number"
-               required>
-
-        <textarea name="address"
-                  placeholder="Delivery Address"
-                  required></textarea>
-        
-        <select name="payment_method" required>
-
-    <option value="">Select Payment Method</option>
-
-    <option value="Credit Card">Credit Card</option>
-
-    <option value="Debit Card">Debit Card</option>
-
-    <option value="EFT">EFT</option>
-
-</select>
-
-<input
-    type="text"
-    name="card_name"
-    placeholder="Name On Card"
-    required>
-
-<input
-    type="text"
-    name="card_number"
-    placeholder="Card Number"
-    maxlength="16"
-    required>
-
-<div class="card-row">
-
-    <input
-        type="text"
-        name="expiry"
-        placeholder="MM/YY"
-        maxlength="5"
-        required>
-
-    <input
-        type="text"
-        name="cvv"
-        placeholder="CVV"
-        maxlength="3"
-        required>
-
-</div>
-
-        <button type="submit"
-                name="place_order"
-                class="checkout-btn">
-
-            Place Order
-
-        </button>
-
-    </form>
-
-</div>
+<?php include 'includes/footer.php'; ?>
 
 </body>
 </html>

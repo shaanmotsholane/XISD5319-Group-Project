@@ -1,133 +1,436 @@
 <?php
-
 session_start();
 
-if(!isset($_SESSION['admin'])){
+if (!isset($_SESSION['admin'])) {
     header("Location: login.php");
     exit();
 }
 
 include '../config/db.php';
 
-$sql = "SELECT * FROM orders
-        INNER JOIN customers
-        ON orders.customer_id = customers.customer_id
-        ORDER BY order_date DESC";
+/*
+|--------------------------------------------------------------------------
+| Load all customer orders
+|--------------------------------------------------------------------------
+*/
 
-$result = mysqli_query($conn, $sql);
+$orders_sql = "
+    SELECT
+        orders.order_id,
+        orders.order_reference,
+        orders.customer_id,
+        orders.total_amount,
+        orders.order_date,
+        customers.name AS customer_name,
+        customers.email AS customer_email
+    FROM orders
+    LEFT JOIN customers
+        ON orders.customer_id = customers.customer_id
+    ORDER BY orders.order_date DESC
+";
+
+$orders_result = mysqli_query($conn, $orders_sql);
+
+if (!$orders_result) {
+    die("Unable to load customer orders.");
+}
+
+/*
+|--------------------------------------------------------------------------
+| Store orders in an array
+|--------------------------------------------------------------------------
+*/
+
+$orders = [];
+$order_ids = [];
+
+while ($order = mysqli_fetch_assoc($orders_result)) {
+    $order_id = (int) $order['order_id'];
+
+    $order['items'] = [];
+
+    $orders[$order_id] = $order;
+    $order_ids[] = $order_id;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Load all order items using one query
+|--------------------------------------------------------------------------
+*/
+
+if (!empty($order_ids)) {
+    $safe_order_ids = array_map('intval', $order_ids);
+    $order_id_list = implode(',', $safe_order_ids);
+
+    $items_sql = "
+        SELECT
+            order_items.order_id,
+            order_items.product_id,
+            order_items.size,
+            order_items.quantity,
+            products.product_name
+        FROM order_items
+        LEFT JOIN products
+            ON order_items.product_id = products.product_id
+        WHERE order_items.order_id IN ($order_id_list)
+        ORDER BY order_items.order_id DESC
+    ";
+
+    $items_result = mysqli_query($conn, $items_sql);
+
+    if (!$items_result) {
+        die("Unable to load the order items.");
+    }
+
+    while ($item = mysqli_fetch_assoc($items_result)) {
+        $order_id = (int) $item['order_id'];
+
+        if (isset($orders[$order_id])) {
+            $orders[$order_id]['items'][] = $item;
+        }
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Order statistics
+|--------------------------------------------------------------------------
+*/
+
+$total_orders = count($orders);
+$total_revenue = 0;
+$total_items_ordered = 0;
+
+foreach ($orders as $order) {
+    $total_revenue += (float) $order['total_amount'];
+
+    foreach ($order['items'] as $item) {
+        $total_items_ordered += (int) $item['quantity'];
+    }
+}
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>View Orders</title>
-    <link rel="icon" type="image/jpeg" href="../images/logo.jpeg">
-    <style>
 
-        body{
-            font-family: Arial;
-            padding: 40px;
-            background: #f4f4f4;
-        }
+    <meta charset="UTF-8">
 
-        table{
-            width: 100%;
-            background: white;
-            border-collapse: collapse;
-        }
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-        th, td{
-            padding: 15px;
-            border: 1px solid #ccc;
-            text-align: left;
-        }
+    <title>Customer Orders | Mustbedelah</title>
 
-        h1{
-            margin-bottom: 20px;
-        }
+    <link
+        rel="icon"
+        type="image/jpeg"
+        href="../images/logo.jpeg"
+    >
 
-    </style>
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    >
+
+    <link rel="stylesheet" href="admin.css">
+
 </head>
+
 <body>
+
 <?php include 'admin-nav.php'; ?>
 
-<h1>Customer Orders</h1>
+<main class="admin-orders-container">
 
-<table>
+    <div class="admin-page-heading">
 
-<tr>
-    <th>Order ID</th>
-    <th>Reference</th>
-    <th>Customer Name</th>
-    <th>Email</th>
-    <th>Items</th>
-    <th>Total Amount</th>
-    <th>Order Date</th>
-    
-</tr>
+        <div>
+            <h1>Customer Orders</h1>
 
-<?php while($row = mysqli_fetch_assoc($result)){ ?>
+            <p>
+                View customer details, ordered products and order totals.
+            </p>
+        </div>
 
-<tr>
+    </div>
 
-    <td>
-        <?php echo $row['order_id']; ?>
-    </td>
+    <section class="admin-stats-grid">
 
-    <td>
-        <strong>
-            <?php echo $row['order_reference']; ?>
-        </strong>
-    </td>
+        <article class="admin-stat-card">
 
-    <td>
-        <?php echo $row['name']; ?>
-    </td>
+            <div class="admin-stat-icon">
+                <i class="fa-solid fa-bag-shopping"></i>
+            </div>
 
-    <td>
-        <?php echo $row['email']; ?>
-    </td>
+            <div>
+                <span>Total Orders</span>
 
-    <td>
+                <strong>
+                    <?php echo number_format($total_orders); ?>
+                </strong>
+            </div>
 
-        <?php
+        </article>
 
-            $items_sql = "SELECT order_items.*, products.product_name
-                        FROM order_items
-                        INNER JOIN products
-                        ON order_items.product_id = products.product_id
-                        WHERE order_items.order_id = '{$row['order_id']}'";
+        <article class="admin-stat-card">
 
-            $items_result = mysqli_query($conn, $items_sql);
+            <div class="admin-stat-icon">
+                <i class="fa-solid fa-box"></i>
+            </div>
 
-            while($item = mysqli_fetch_assoc($items_result)){
+            <div>
+                <span>Items Ordered</span>
 
-                    echo $item['product_name'];
+                <strong>
+                    <?php echo number_format($total_items_ordered); ?>
+                </strong>
+            </div>
 
-                    echo " (" . $item['size'] . ")";
+        </article>
 
-                    echo " × " . $item['quantity'];
+        <article class="admin-stat-card">
 
-                    echo "<br>";
-                    }
+            <div class="admin-stat-icon">
+                <i class="fa-solid fa-sack-dollar"></i>
+            </div>
 
-        ?>
+            <div>
+                <span>Total Order Value</span>
 
-    </td>
+                <strong>
+                    R<?php
+                    echo number_format(
+                        $total_revenue,
+                        2,
+                        '.',
+                        ','
+                    );
+                    ?>
+                </strong>
+            </div>
 
-    <td>
-        R<?php echo $row['total_amount']; ?>
-    </td>
+        </article>
 
-    <td>
-        <?php echo $row['order_date']; ?>
-    </td>
+    </section>
 
-</tr>
+    <?php if (empty($orders)) { ?>
 
-<?php } ?>
+        <section class="admin-empty-state">
 
-</table>
+            <i class="fa-solid fa-bag-shopping"></i>
+
+            <h2>No orders found</h2>
+
+            <p>
+                Customer orders will appear here after checkout.
+            </p>
+
+        </section>
+
+    <?php } else { ?>
+
+        <section class="admin-table-card">
+
+            <div class="admin-table-wrapper">
+
+                <table class="admin-orders-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Order</th>
+                            <th>Customer</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Date</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    <?php foreach ($orders as $order) { ?>
+
+                        <tr>
+
+                            <td data-label="Order">
+
+                                <div class="order-reference">
+
+                                    <strong>
+                                        <?php
+                                        echo htmlspecialchars(
+                                            $order['order_reference']
+                                        );
+                                        ?>
+                                    </strong>
+
+                                    <span>
+                                        Order ID:
+                                        <?php
+                                        echo (int) $order['order_id'];
+                                        ?>
+                                    </span>
+
+                                </div>
+
+                            </td>
+
+                            <td data-label="Customer">
+
+                                <div class="order-customer">
+
+                                    <strong>
+                                        <?php
+                                        echo htmlspecialchars(
+                                            $order['customer_name']
+                                            ?? 'Customer unavailable'
+                                        );
+                                        ?>
+                                    </strong>
+
+                                    <a
+                                        href="mailto:<?php
+                                            echo htmlspecialchars(
+                                                $order['customer_email']
+                                                ?? ''
+                                            );
+                                        ?>"
+                                    >
+                                        <?php
+                                        echo htmlspecialchars(
+                                            $order['customer_email']
+                                            ?? 'Email unavailable'
+                                        );
+                                        ?>
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                            <td data-label="Items">
+
+                                <div class="admin-order-items">
+
+                                <?php if (empty($order['items'])) { ?>
+
+                                    <span class="order-item-unavailable">
+                                        No item information available
+                                    </span>
+
+                                <?php } else { ?>
+
+                                    <?php foreach (
+                                        $order['items'] as $item
+                                    ) { ?>
+
+                                        <div class="admin-order-item">
+
+                                            <strong>
+                                                <?php
+                                                echo htmlspecialchars(
+                                                    $item['product_name']
+                                                    ?? 'Deleted product'
+                                                );
+                                                ?>
+                                            </strong>
+
+                                            <span>
+                                                <?php
+                                                if (
+                                                    !empty($item['size'])
+                                                ) {
+                                                    echo 'Size: '
+                                                        . htmlspecialchars(
+                                                            $item['size']
+                                                        )
+                                                        . ' · ';
+                                                }
+                                                ?>
+
+                                                Quantity:
+                                                <?php
+                                                echo (int)
+                                                    $item['quantity'];
+                                                ?>
+                                            </span>
+
+                                        </div>
+
+                                    <?php } ?>
+
+                                <?php } ?>
+
+                                </div>
+
+                            </td>
+
+                            <td data-label="Total">
+
+                                <strong class="order-total">
+                                    R<?php
+                                    echo number_format(
+                                        (float)
+                                            $order['total_amount'],
+                                        2,
+                                        '.',
+                                        ','
+                                    );
+                                    ?>
+                                </strong>
+
+                            </td>
+
+                            <td data-label="Date">
+
+                                <div class="order-date">
+
+                                    <strong>
+                                        <?php
+                                        echo date(
+                                            'd M Y',
+                                            strtotime(
+                                                $order['order_date']
+                                            )
+                                        );
+                                        ?>
+                                    </strong>
+
+                                    <span>
+                                        <?php
+                                        echo date(
+                                            'H:i',
+                                            strtotime(
+                                                $order['order_date']
+                                            )
+                                        );
+                                        ?>
+                                    </span>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    <?php } ?>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    <?php } ?>
+
+</main>
 
 </body>
 </html>

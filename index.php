@@ -36,55 +36,7 @@ if(isset($_SESSION['customer_id'])){
 <body>
 
     <!-- **********NAVBAR********** -->
-    <nav class="navbar">
-
-    <div class="logo">
-        <a href="index.php">mustbedelah</a>
-    </div>
-
-    <ul class="nav-links">
-
-        <li><a href="index.php">Home</a></li>
-
-        <li><a href="shop.php">Shop</a></li>
-
-        <li><a href="about.php">About</a></li>
-
-        <li><a href="about.php#contact">Contact</a></li>
-
-        <li>
-            <a href="cart.php">
-                Cart (<?php echo $cart_count; ?>)
-            </a>
-        </li>
-
-        <?php if(isset($_SESSION['name'])){ ?>
-
-            <li>
-                <a href="#">
-                    <?php echo $_SESSION['name']; ?>
-                </a>
-            </li>
-
-            <li>
-                <a href="my-orders.php">My Orders</a>
-            </li>
-
-            <li>
-                <a href="logout.php">Logout</a>
-            </li>
-
-        <?php } else { ?>
-
-            <li>
-                <a href="login.php">Sign In</a>
-            </li>
-
-        <?php } ?>
-
-    </ul>
-
-</nav>
+    <?php include 'includes/header.php'; ?>
 
     <!-- This is for the opening picture  -->
     <section class="hero">
@@ -181,48 +133,7 @@ if(isset($_SESSION['customer_id'])){
 
     <!-- This is a footer for the website  -->
     <section>
-
-        <footer>
-
-            <h5>mustbedelah</h5>
-
-            <ul class="list1">
-                <li class="Top">Shop</li>
-                <li>New Drops</li>
-                <li>Hoodies & Tees</li>
-                <li>Bottoms</li>
-            </ul>
-
-            <ul class="list2">
-                <li class="Top">Company</li>
-                <li>About us</li>
-                <li>Contact us</li>
-            </ul>
-
-            <ul class="list3">
-                <li class="Top">Help</li>
-                <li>Shipping</li>
-                <li>Returns</li>
-                <li>Size Guide</li>
-            </ul>
-
-            <div class="social-icons">
-
-                <a href="https://www.instagram.com/mustbedelah?igsh=d3l6bXB3emV2djFo" target="_blank">
-                    <i class="fa-brands fa-instagram"></i>
-                </a>
-
-                <a href="https://www.tiktok.com/@mustbedelah" target="_blank">
-                    <i class="fa-brands fa-tiktok"></i>
-                </a>
-
-                <a href="https://www.facebook.com/MustBeDelah/" target="_blank">
-                    <i class="fa-brands fa-facebook-f"></i>
-                </a>
-
-            </div>
-
-        </footer>
+        <?php include 'includes/footer.php'; ?>
     </section>
 
     <script src="script.js"></script>

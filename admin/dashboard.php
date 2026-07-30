@@ -1,81 +1,225 @@
 <?php
 session_start();
 
-if(!isset($_SESSION['admin'])){
+if (!isset($_SESSION['admin'])) {
     header("Location: login.php");
     exit();
 }
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
 
-<title>Admin Dashboard</title>
-<link rel="icon" type="image/jpeg" href="../images/logo.jpeg">
-<style>
+    <meta charset="UTF-8">
 
-body{
-    font-family: Arial;
-    background: #f4f4f4;
-    padding: 40px;
-}
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-.dashboard{
-    width: 500px;
-    margin: auto;
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-}
+    <title>Admin Dashboard | Mustbedelah</title>
 
-a{
-    display: block;
-    padding: 15px;
-    background: black;
-    color: white;
-    text-decoration: none;
-    margin-top: 10px;
-    text-align: center;
-}
+    <link
+        rel="icon"
+        type="image/jpeg"
+        href="../images/logo.jpeg"
+    >
 
-h1{
-    text-align: center;
-}
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    >
 
-</style>
+    <link rel="stylesheet" href="admin.css">
 
 </head>
 
 <body>
+
 <?php include 'admin-nav.php'; ?>
 
-<div class="dashboard">
+<main class="admin-page">
 
-    <h1>Admin Dashboard</h1>
+    <div class="admin-container">
 
-    <a href="manage-products.php">
-        Manage Products
-    </a>
+        <div class="admin-page-heading">
 
-    <a href="add-product.php">
-        Add Products
-    </a>
+            <div>
 
-    <a href="orders.php">
-        View Orders
-    </a>
+                <p class="admin-page-label">
+                    Administration
+                </p>
 
-    <a href="messages.php">
-        Messages
-    </a>
+                <h1>Admin Dashboard</h1>
 
-    <a href="logout.php">
-        Logout
-    </a>
+                <p>
+                    Manage products, customer orders, messages and reports.
+                </p>
 
-<a href="reports.php">Reports</a>
-</div>
+            </div>
+
+        </div>
+
+        <section class="admin-dashboard-grid">
+
+            <a
+                href="manage-products.php"
+                class="admin-dashboard-card"
+            >
+
+                <div class="admin-card-icon">
+
+                    <i class="fa-solid fa-shirt"></i>
+
+                </div>
+
+                <div class="admin-card-content">
+
+                    <h2>Manage Products</h2>
+
+                    <p>
+                        View, edit or remove products from the store.
+                    </p>
+
+                </div>
+
+                <i class="fa-solid fa-arrow-right admin-card-arrow"></i>
+
+            </a>
+
+            <a
+                href="add-product.php"
+                class="admin-dashboard-card"
+            >
+
+                <div class="admin-card-icon">
+
+                    <i class="fa-solid fa-circle-plus"></i>
+
+                </div>
+
+                <div class="admin-card-content">
+
+                    <h2>Add Product</h2>
+
+                    <p>
+                        Add new products, prices, images and stock.
+                    </p>
+
+                </div>
+
+                <i class="fa-solid fa-arrow-right admin-card-arrow"></i>
+
+            </a>
+
+            <a
+                href="orders.php"
+                class="admin-dashboard-card"
+            >
+
+                <div class="admin-card-icon">
+
+                    <i class="fa-solid fa-box"></i>
+
+                </div>
+
+                <div class="admin-card-content">
+
+                    <h2>View Orders</h2>
+
+                    <p>
+                        Review customer orders and order information.
+                    </p>
+
+                </div>
+
+                <i class="fa-solid fa-arrow-right admin-card-arrow"></i>
+
+            </a>
+
+            <a
+                href="messages.php"
+                class="admin-dashboard-card"
+            >
+
+                <div class="admin-card-icon">
+
+                    <i class="fa-solid fa-envelope"></i>
+
+                </div>
+
+                <div class="admin-card-content">
+
+                    <h2>Messages</h2>
+
+                    <p>
+                        Read customer enquiries and contact messages.
+                    </p>
+
+                </div>
+
+                <i class="fa-solid fa-arrow-right admin-card-arrow"></i>
+
+            </a>
+
+            <a
+                href="reports.php"
+                class="admin-dashboard-card"
+            >
+
+                <div class="admin-card-icon">
+
+                    <i class="fa-solid fa-chart-column"></i>
+
+                </div>
+
+                <div class="admin-card-content">
+
+                    <h2>Reports</h2>
+
+                    <p>
+                        View sales, product and order performance.
+                    </p>
+
+                </div>
+
+                <i class="fa-solid fa-arrow-right admin-card-arrow"></i>
+
+            </a>
+
+            <a
+                href="logout.php"
+                class="admin-dashboard-card admin-logout-card"
+            >
+
+                <div class="admin-card-icon">
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                </div>
+
+                <div class="admin-card-content">
+
+                    <h2>Logout</h2>
+
+                    <p>
+                        End the current administrator session securely.
+                    </p>
+
+                </div>
+
+                <i class="fa-solid fa-arrow-right admin-card-arrow"></i>
+
+            </a>
+
+        </section>
+
+    </div>
+
+</main>
 
 </body>
+
 </html>

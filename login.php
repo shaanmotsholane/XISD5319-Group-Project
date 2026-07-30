@@ -34,70 +34,56 @@ if(isset($_POST['login'])){
 <head>
     <title>Login</title>
     <link rel="icon" type="image/jpeg" href="images/logo.jpeg">
+    <link rel="stylesheet" href="style.css">
 
-    <style>
-
-        body{
-            font-family: Arial;
-            background: #f4f4f4;
-            padding: 40px;
-        }
-
-        form{
-            background: white;
-            padding: 30px;
-            width: 400px;
-            margin: auto;
-            border-radius: 10px;
-        }
-
-        input{
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-        }
-
-        button{
-            width: 100%;
-            padding: 12px;
-            background: black;
-            color: white;
-            border: none;
-            margin-top: 10px;
-        }
-
-        h1{
-            text-align: center;
-        }
-
-    </style>
 </head>
 <body>
+    <?php include 'includes/header.php'; ?>
 
-<h1>Login</h1>
+<div class="form-container">
 
-<form method="POST">
+    <h1>Login</h1>
 
-    <input type="email" name="email" placeholder="Email" required>
+    <form method="POST">
 
-    <input type="password" name="password" placeholder="Password" required>
+        <div class="form-group">
+            <label>Email Address</label>
+            <input
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                required
+            >
+        </div>
 
-    <button type="submit" name="login">
-        Login
-    </button>
+        <div class="form-group">
+            <label>Password</label>
+            <input
+                type="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+            >
+        </div>
 
-    <p style="text-align:center; margin-top:15px;">
-        Don't have an account?
-        <a href="register.php">Register Here</a>
-    </p>
+        <button type="submit" name="login">
+            Login
+        </button>
 
-    <p style="text-align:center; margin-top:10px;">
-        <a href="admin/login.php">
-        Login as Admin
-        </a>
-    </p>
+        <p class="form-footer-text">
+            Don't have an account?
+            <a href="register.php">Register Here</a>
+        </p>
 
-</form>
+        <p class="form-footer-text">
+            <a href="admin/login.php">
+                Login as Admin
+            </a>
+        </p>
+
+    </form>
+
+</div>
 
 </body>
 </html>

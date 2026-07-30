@@ -27,60 +27,61 @@ if(isset($_POST['register'])){
     <title>Register</title>
     <link rel="icon" type="image/jpeg" href="images/logo.jpeg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-
-        body{
-            font-family: Arial;
-            background: #f4f4f4;
-            padding: 40px;
-        }
-
-        form{
-            background: white;
-            padding: 30px;
-            width: 400px;
-            margin: auto;
-            border-radius: 10px;
-        }
-
-        input{
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-        }
-
-        button{
-            width: 100%;
-            padding: 12px;
-            background: black;
-            color: white;
-            border: none;
-            margin-top: 10px;
-        }
-
-        h1{
-            text-align: center;
-        }
-
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<?php include 'includes/header.php'; ?>
 
-<h1>Register</h1>
+<div class="form-container">
 
-<form method="POST">
+    <h1>Create Account</h1>
 
-    <input type="text" name="name" placeholder="Full Name" required>
+    <form method="POST">
 
-    <input type="email" name="email" placeholder="Email" required>
+        <div class="form-group">
+            <label>Full Name</label>
+            <input
+                type="text"
+                name="name"
+                placeholder="Enter your full name"
+                required
+            >
+        </div>
 
-    <input type="password" name="password" placeholder="Password" required>
+        <div class="form-group">
+            <label>Email Address</label>
+            <input
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                required
+            >
+        </div>
 
-    <button type="submit" name="register">
-        Register
-    </button>
+        <div class="form-group">
+            <label>Password</label>
+            <input
+                type="password"
+                name="password"
+                placeholder="Create a password"
+                required
+            >
+        </div>
 
-</form>
+        <button type="submit" name="register">
+            Create Account
+        </button>
+
+    </form>
+
+    <p class="form-footer-text">
+        Already have an account?
+        <a href="login.php">Login Here</a>
+    </p>
+
+</div>
+
+<?php include 'includes/footer.php'; ?>
 
 </body>
 </html>
