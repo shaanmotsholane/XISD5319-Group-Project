@@ -440,7 +440,7 @@ if(isset($_POST['send_message'])){
     <!-- ========================================== -->
     <!-- 5. THE MOVEMENT STARTS HERE (With Contact)  -->
     <!-- ========================================== -->
-    <section class="final-section reveal">
+    <section id="final-section" class="final-section reveal">
         <h2>The Movement<br>Starts Here.</h2>
         
         <!-- Your existing Contact Form, styled beautifully -->

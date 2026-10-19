@@ -5,14 +5,14 @@
             <ul class="list1">
                 <li class="Top">Shop</li>
                 <li>New Drops</li>
-                <li>Hoodies & Tees</li>
-                <li>Bottoms</li>
+                <li><a href="shop.php">Hoodies & Tees</a></li>
+                <li><a href="shop.php">Bottoms</a></li>
             </ul>
 
             <ul class="list2">
                 <li class="Top">Company</li>
-                <li>About us</li>
-                <li>Contact us</li>
+                <li><a href="about.php">About u</a>s</li>
+                <li><a href="about.php#final-section">Contact us</a></li>
             </ul>
 
             <ul class="list3">

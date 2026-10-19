@@ -48,7 +48,7 @@ if (isset($_SESSION['customer_id'])) {
         </li>
 
         <li>
-            <a href="about.php#contact">Contact</a>
+            <a href="about.php#final-section">Contact</a>
         </li>
 
         <li>
