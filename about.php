@@ -1,18 +1,22 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 include 'config/db.php';
 
-if(isset($_POST['send_message'])){
+if (isset($_POST['send_message'])) {
 
     $name = mysqli_real_escape_string($conn, $_POST['name']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $message = mysqli_real_escape_string($conn, $_POST['message']);
 
-    $sql = "INSERT INTO contact_messages(name, email, message)
-            VALUES('$name', '$email', '$message')";
+    $sql = "INSERT INTO contact_messages (name, email, message)
+            VALUES ('$name', '$email', '$message')";
 
-    if(mysqli_query($conn, $sql)){
+    if (mysqli_query($conn, $sql)) {
         $form_success = true;
-    }else{
+    } else {
         $form_error = "SQL Error: " . mysqli_error($conn);
     }
 }

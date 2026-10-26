@@ -48,8 +48,10 @@ if(isset($_SESSION['customer_id'])){
             <h1>FRESH DROPS DAILY</h1>
 
             <p>
+                <strong>
                 Bold streetwear for those who make their own rules.<br>
                 Rep the culture, own the streets.
+                </strong>
             </p>
 
             <a href="shop.php">
