@@ -4,7 +4,7 @@
 
             <ul class="list1">
                 <li class="Top">Shop</li>
-                <li>New Drops</li>
+                <li><a href="shop.php">New Drops</a></li>
                 <li><a href="shop.php">Hoodies & Tees</a></li>
                 <li><a href="shop.php">Bottoms</a></li>
             </ul>
@@ -17,9 +17,9 @@
 
             <ul class="list3">
                 <li class="Top">Help</li>
-                <li>Shipping</li>
-                <li>Returns</li>
-                <li>Size Guide</li>
+                <li><a href="shipping.php">Shipping</a></li>
+                <li><a href="returns.php">Returns</a></li>
+                <li><a href="size-guide.php">Size Guide</a></li>
             </ul>
 
             <div class="social-icons">
