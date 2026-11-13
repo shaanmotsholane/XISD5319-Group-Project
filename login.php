@@ -3,28 +3,35 @@ session_start();
 
 include 'config/db.php';
 
+$error = "";
+
 if(isset($_POST['login'])){
 
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $sql = "SELECT * FROM customers 
-            WHERE email='$email' 
-            AND password='$password'";
+    $sql = "SELECT * FROM customers WHERE email = ?";
 
-    $result = mysqli_query($conn, $sql);
+    $stmt = mysqli_prepare($conn, $sql);
 
-    if(mysqli_num_rows($result) > 0){
+    mysqli_stmt_bind_param($stmt, "s", $email);
 
-        $row = mysqli_fetch_assoc($result);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
+    $row = mysqli_fetch_assoc($result);
+
+    if ($row && password_verify($password, $row['password'])) {
 
         $_SESSION['customer_id'] = $row['customer_id'];
         $_SESSION['name'] = $row['name'];
 
         header("Location: index.php");
+        exit();
 
     }else{
-        echo "Invalid Email or Password";
+        $error = "Invalid Email or Password";
     }
 }
 ?>
@@ -43,6 +50,14 @@ if(isset($_POST['login'])){
 <div class="form-container">
 
     <h1>Login</h1>
+
+    <?php if (!empty($error)): ?>
+
+        <div class = "form-message error">
+            <?php echo htmlspecialchars($error); ?>
+        </div>
+
+    <?php endif; ?>
 
     <form method="POST">
 
@@ -65,6 +80,10 @@ if(isset($_POST['login'])){
                 required
             >
         </div>
+
+        <p class="form-footer-text">
+            <a href="forgot_password.php">Forgot Password?</a>
+        </p> 
 
         <button type="submit" name="login">
             Login

@@ -38,16 +38,20 @@ if(isset($_POST['register'])){
     }
 
     if (empty($error)){
-        $sql = "INSERT INTO customers(name, email, password)
-            VALUES('$name', '$email', '$password')";
 
-        if(mysqli_query($conn, $sql)){
+        $hashedPassword = password_hash($password,PASSWORD_DEFAULT);
+        $sql = "INSERT INTO customers (name, email, password)
+        VALUES (?, ?, ?)";
 
+        $stmt = mysqli_prepare($conn, $sql);
+
+        mysqli_stmt_bind_param($stmt, "sss", $name, $email, $hashedPassword);
+
+        if (mysqli_stmt_execute($stmt)) {
             header("Location: login.php");
-            exit();
-
-        }else{
-            echo "Error: " . mysqli_error($conn);
+        exit();
+        } else {
+            $error = "Registration failed. Please try again.";
         }
 
     }
@@ -73,9 +77,9 @@ if(isset($_POST['register'])){
 
     <?php if (!empty($error)): ?>
 
-        <p style="color: red;">
+        <div class = "form-message error">
             <?php echo htmlspecialchars($error); ?>
-        </p>
+        </div>
 
     <?php endif; ?>
 
