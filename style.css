@@ -2355,3 +2355,130 @@ button{border:none;border-radius:25px;cursor:pointer;transition:all .3s ease;}bu
         width: 100%;
     }
 }
+
+
+/* MUSTBEDELAH NAVIGATION ICONS */
+
+.navbar .nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.navbar .nav-links li {
+    list-style: none;
+}
+
+.navbar .nav-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    position: relative;
+    text-decoration: none;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.navbar .nav-links a i {
+    font-size: 19px;
+}
+
+.navbar .nav-links a:hover {
+    transform: translateY(-2px);
+}
+
+.navbar .nav-links a:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 5px;
+    border-radius: 3px;
+}
+
+/* Cart count */
+.nav-cart {
+    position: relative;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -10px;
+    right: -12px;
+    background: #c62828;
+    color: white;
+    border-radius: 50%;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+/* Customer name */
+.navbar .customer-name {
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Smaller screens */
+@media (max-width: 768px) {
+    .navbar {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .navbar .nav-links {
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .navbar .nav-links a i {
+        font-size: 18px;
+    }
+
+    .navbar .customer-name {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar .nav-links {
+        gap: 12px;
+    }
+
+    .navbar .nav-links a i {
+        font-size: 17px;
+    }
+
+    .nav-signin-text {
+        display: none;
+    }
+}
+
+
+/* =====================================
+   REMOVE UNWANTED BUTTON HOVER BORDERS
+   ===================================== */
+
+button:hover,
+.btn:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover,
+.checkout-btn:hover {
+    border-color: transparent;
+    box-shadow: none;
+}
+
+/* Keep buttons accessible when using a keyboard */
+button:focus-visible,
+.btn:focus-visible,
+input[type="submit"]:focus-visible,
+.checkout-btn:focus-visible {
+    outline: 3px solid #777;
+    outline-offset: 3px;
+}
+

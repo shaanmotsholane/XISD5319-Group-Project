@@ -1,27 +1,51 @@
+
 <?php
 session_start();
+require_once 'config/db.php';
 
-include 'config/db.php';
-
-if(!isset($_SESSION['customer_id'])){
+if (!isset($_SESSION['customer_id'])) {
     header("Location: login.php");
-    exit();
+    exit;
 }
 
-$customer_id = $_SESSION['customer_id'];
+$customerId = (int) $_SESSION['customer_id'];
+$error = "";
 
-$check_cart = "SELECT * FROM cart
-               WHERE customer_id = '$customer_id'";
-
-$cart_result = mysqli_query($conn, $check_cart);
-
-if(mysqli_num_rows($cart_result) == 0){
-
-    header("Location: cart.php?error=empty");
-
-    exit();
+function checkoutEscape($value) {
+    return htmlspecialchars(
+        (string)($value ?? ''),
+        ENT_QUOTES,
+        'UTF-8'
+    );
 }
 
+// Get saved customer details
+$stmt = mysqli_prepare(
+    $conn,
+    "SELECT name, email, phone, address
+     FROM customers WHERE customer_id = ?"
+);
+
+mysqli_stmt_bind_param($stmt, "i", $customerId);
+mysqli_stmt_execute($stmt);
+
+$customer = mysqli_fetch_assoc(
+    mysqli_stmt_get_result($stmt)
+);
+
+mysqli_stmt_close($stmt);
+
+if (!$customer) {
+    header("Location: login.php");
+    exit;
+}
+
+// Automatically use saved profile information
+$phone = $customer['phone'] ?? '';
+$address = $customer['address'] ?? '';
+$paymentMethod = "";
+
+// Get cart items
 $sql = "SELECT
             cart.cart_id,
             cart.product_id,
@@ -34,347 +58,455 @@ $sql = "SELECT
             products.stock_quantity
         FROM cart
         INNER JOIN products
-        ON cart.product_id = products.product_id
-        WHERE cart.customer_id = '$customer_id'";
+            ON cart.product_id = products.product_id
+        WHERE cart.customer_id = ?";
 
-$result = mysqli_query($conn, $sql);
+$stmt = mysqli_prepare($conn, $sql);
+mysqli_stmt_bind_param($stmt, "i", $customerId);
+mysqli_stmt_execute($stmt);
 
+$result = mysqli_stmt_get_result($stmt);
+
+$cartItems = [];
 $total = 0;
 
-$cart_items = [];
-
-while($row = mysqli_fetch_assoc($result)){
-
-    $total += $row['price'] * $row['quantity'];
-
-    $cart_items[] = $row;
+while ($row = mysqli_fetch_assoc($result)) {
+    $cartItems[] = $row;
+    $total += (float)$row['price'] * (int)$row['quantity'];
 }
 
-if(isset($_POST['place_order'])){
+mysqli_stmt_close($stmt);
 
-    $phone = $_POST['phone'];
-    $address = $_POST['address'];
+if (empty($cartItems)) {
+    header("Location: cart.php?error=empty");
+    exit;
+}
 
-    $update_customer = "UPDATE customers
-                        SET phone='$phone',
-                            address='$address'
-                        WHERE customer_id='$customer_id'";
+// CSRF protection
+if (empty($_SESSION['checkout_csrf'])) {
+    $_SESSION['checkout_csrf'] = bin2hex(random_bytes(32));
+}
 
-    mysqli_query($conn, $update_customer);
+// Process checkout
+if ($_SERVER['REQUEST_METHOD'] === 'POST'
+    && isset($_POST['place_order'])) {
 
-    $order_reference = "MBD-" . strtoupper(substr(md5(uniqid()), 0, 8));
+    $phone = trim((string)($_POST['phone'] ?? ''));
+    $address = trim((string)($_POST['address'] ?? ''));
+    $paymentMethod = (string)($_POST['payment_method'] ?? '');
+    $csrf = $_POST['csrf_token'] ?? '';
 
-    $order_sql = "INSERT INTO orders(customer_id, order_reference, total_amount)
-                    VALUES('$customer_id', '$order_reference', '$total')";
+    $allowedPayments = [
+        'Credit Card',
+        'Debit Card',
+        'EFT'
+    ];
 
-    mysqli_query($conn, $order_sql);
+    if (!is_string($csrf) ||
+        !hash_equals($_SESSION['checkout_csrf'], $csrf)) {
 
-    $order_id = mysqli_insert_id($conn);
+        $error = "Invalid checkout request. Please refresh the page.";
 
-    foreach($cart_items as $item){
+    } elseif ($phone === '' || strlen($phone) > 20) {
 
-    $product_id = $item['product_id'];
+        $error = "Please enter a valid phone number.";
 
-    $quantity = $item['quantity'];
+    } elseif ($address === '' || strlen($address) > 2000) {
 
-    $size = $item['size'];
+        $error = "Please enter your delivery address.";
 
-    $colour = $item['colour'];
+    } elseif (!in_array($paymentMethod, $allowedPayments, true)) {
 
-    $price = $item['price'];
+        $error = "Please select a payment method.";
 
-    $order_item_sql = "INSERT INTO order_items(
-                        order_id,
-                        product_id,
-                        quantity,
-                        size,
-                        colour,
-                        price
-                    )
-                    VALUES(
-                        '$order_id',
-                        '$product_id',
-                        '$quantity',
-                        '$size',
-                        '$colour',
-                        '$price'
-                    )";
+    } else {
 
-    mysqli_query($conn, $order_item_sql);
+        try {
+            mysqli_begin_transaction($conn);
 
-    $product_id = $item['product_id'];
+            // Lock cart rows and products during checkout
+            $sql = "SELECT
+                        cart.product_id,
+                        cart.quantity,
+                        cart.size,
+                        cart.colour,
+                        products.price,
+                        products.stock_quantity
+                    FROM cart
+                    INNER JOIN products
+                        ON cart.product_id = products.product_id
+                    WHERE cart.customer_id = ?
+                    ORDER BY cart.product_id
+                    FOR UPDATE";
 
-    $quantity = $item['quantity'];
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "i", $customerId);
+            mysqli_stmt_execute($stmt);
 
-    $update_stock = "UPDATE products
-                     SET stock_quantity = stock_quantity - $quantity
-                     WHERE product_id='$product_id'";
+            $lockedResult = mysqli_stmt_get_result($stmt);
+            $lockedItems = [];
+            $orderTotal = 0;
+            $quantities = [];
 
-    mysqli_query($conn, $update_stock);
+            while ($item = mysqli_fetch_assoc($lockedResult)) {
+                $lockedItems[] = $item;
+
+                $productId = (int)$item['product_id'];
+                $quantity = (int)$item['quantity'];
+
+                if ($quantity <= 0) {
+                    throw new Exception("Invalid cart quantity.");
+                }
+
+                $quantities[$productId] =
+                    ($quantities[$productId] ?? 0) + $quantity;
+
+                $orderTotal +=
+                    (float)$item['price'] * $quantity;
+            }
+
+            mysqli_stmt_close($stmt);
+
+            if (empty($lockedItems)) {
+                throw new Exception("Your cart is empty.");
+            }
+
+            foreach ($lockedItems as $item) {
+                $productId = (int)$item['product_id'];
+
+                if ($quantities[$productId] >
+                    (int)$item['stock_quantity']) {
+                    throw new Exception(
+                        "One or more products have insufficient stock."
+                    );
+                }
+            }
+
+            // Generate unique order reference
+            $orderReference = "MBD-" .
+                strtoupper(bin2hex(random_bytes(8)));
+
+            // Create order
+            $sql = "INSERT INTO orders
+                    (customer_id, order_reference, total_amount)
+                    VALUES (?, ?, ?)";
+
+            $stmt = mysqli_prepare($conn, $sql);
+
+            mysqli_stmt_bind_param(
+                $stmt,
+                "isd",
+                $customerId,
+                $orderReference,
+                $orderTotal
+            );
+
+            mysqli_stmt_execute($stmt);
+            $orderId = mysqli_insert_id($conn);
+            mysqli_stmt_close($stmt);
+
+            // Save delivery details for this order
+            $sql = "INSERT INTO order_delivery_details
+                    (order_id, phone, address, payment_method)
+                    VALUES (?, ?, ?, ?)";
+
+            $stmt = mysqli_prepare($conn, $sql);
+
+            mysqli_stmt_bind_param(
+                $stmt,
+                "isss",
+                $orderId,
+                $phone,
+                $address,
+                $paymentMethod
+            );
+
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+
+            // Save ordered products
+            $sql = "INSERT INTO order_items
+                    (order_id, product_id, quantity,
+                     size, colour, price)
+                    VALUES (?, ?, ?, ?, ?, ?)";
+
+            $itemStmt = mysqli_prepare($conn, $sql);
+
+            foreach ($lockedItems as $item) {
+
+                $productId = (int)$item['product_id'];
+                $quantity = (int)$item['quantity'];
+                $size = (string)$item['size'];
+                $colour = (string)$item['colour'];
+                $price = (float)$item['price'];
+
+                mysqli_stmt_bind_param(
+                    $itemStmt,
+                    "iiissd",
+                    $orderId,
+                    $productId,
+                    $quantity,
+                    $size,
+                    $colour,
+                    $price
+                );
+
+                mysqli_stmt_execute($itemStmt);
+            }
+
+            mysqli_stmt_close($itemStmt);
+
+            // Update stock
+            $stockStmt = mysqli_prepare(
+                $conn,
+                "UPDATE products
+                 SET stock_quantity = stock_quantity - ?
+                 WHERE product_id = ?
+                   AND stock_quantity >= ?"
+            );
+
+            foreach ($quantities as $productId => $quantity) {
+
+                mysqli_stmt_bind_param(
+                    $stockStmt,
+                    "iii",
+                    $quantity,
+                    $productId,
+                    $quantity
+                );
+
+                mysqli_stmt_execute($stockStmt);
+
+                if (mysqli_stmt_affected_rows($stockStmt) !== 1) {
+                    throw new Exception(
+                        "Insufficient stock for a product."
+                    );
+                }
+            }
+
+            mysqli_stmt_close($stockStmt);
+
+            // Clear customer cart
+            $stmt = mysqli_prepare(
+                $conn,
+                "DELETE FROM cart WHERE customer_id = ?"
+            );
+
+            mysqli_stmt_bind_param($stmt, "i", $customerId);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+
+            mysqli_commit($conn);
+
+            $_SESSION['checkout_csrf'] =
+                bin2hex(random_bytes(32));
+
+            header(
+                "Location: order-success.php?ref="
+                . urlencode($orderReference)
+            );
+            exit;
+
+        } catch (Throwable $e) {
+
+            mysqli_rollback($conn);
+
+            error_log("Checkout error: " . $e->getMessage());
+
+            $error = "Unable to place your order. "
+                   . "Please check your cart and try again.";
+        }
     }
-
-    $clear_cart = "DELETE FROM cart
-                   WHERE customer_id='$customer_id'";
-
-    mysqli_query($conn, $clear_cart);
-
-    header("Location: order-success.php?ref=" . $order_reference);
-exit();
 }
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Checkout</title>
+    <title>Checkout - Mustbedelah</title>
     <link rel="icon" type="image/jpeg" href="images/logo.jpeg">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <?php include 'includes/header.php'; ?>
 
 <main class="checkout-page">
 
-    <div class="checkout-container">
+<div class="checkout-container">
 
-        <section class="checkout-summary">
+    <section class="checkout-summary">
 
-            <h1>Checkout</h1>
+        <h1>Checkout</h1>
 
-            <p class="checkout-intro">
-                Review your items and enter your delivery information.
-            </p>
+        <p class="checkout-intro">
+            Review your items and delivery information.
+        </p>
 
-            <div class="checkout-items">
+        <?php if ($error !== ''): ?>
+            <div class="form-message error">
+                <?php echo checkoutEscape($error); ?>
+            </div>
+        <?php endif; ?>
 
-                <?php foreach ($cart_items as $item) { ?>
+        <div class="checkout-items">
 
-                    <div class="checkout-item">
+            <?php foreach ($cartItems as $item): ?>
 
-                        <img
-                            src="<?php echo htmlspecialchars($item['image']); ?>"
-                            alt="<?php echo htmlspecialchars($item['product_name']); ?>"
-                            class="checkout-image"
-                        >
+                <div class="checkout-item">
 
-                        <div class="checkout-info">
+                    <img
+                        src="<?php echo checkoutEscape($item['image']); ?>"
+                        alt="<?php echo checkoutEscape($item['product_name']); ?>"
+                        class="checkout-image"
+                    >
 
-                            <h3>
-                                <?php echo htmlspecialchars($item['product_name']); ?>
-                            </h3>
+                    <div class="checkout-info">
 
-                            <p>
-                                Size:
-                                <strong>
-                                    <?php echo htmlspecialchars($item['size']); ?>
-                                </strong>
-                            </p>
+                        <h3>
+                            <?php echo checkoutEscape($item['product_name']); ?>
+                        </h3>
 
-                            <p>
-                                Colour:
-                                <strong>
-                                    <?php echo htmlspecialchars($item['colour']); ?>
-                                </strong>
-                            </p>
+                        <p>
+                            Size:
+                            <strong>
+                                <?php echo checkoutEscape($item['size']); ?>
+                            </strong>
+                        </p>
 
-                            <p>
-                                Quantity:
-                                <strong>
-                                    <?php echo (int) $item['quantity']; ?>
-                                </strong>
-                            </p>
+                        <p>
+                            Colour:
+                            <strong>
+                                <?php echo checkoutEscape($item['colour']); ?>
+                            </strong>
+                        </p>
 
-                        </div>
+                        <p>
+                            Quantity:
+                            <strong>
+                                <?php echo (int)$item['quantity']; ?>
+                            </strong>
+                        </p>
 
-                        <div class="checkout-item-price">
-                            R<?php
+                    </div>
+
+                    <div class="checkout-item-price">
+                        R<?php
                             echo number_format(
                                 $item['price'] * $item['quantity'],
                                 2
                             );
-                            ?>
-                        </div>
-
-                    </div>
-
-                <?php } ?>
-
-            </div>
-
-            <div class="checkout-total">
-
-                <span>Order Total</span>
-
-                <strong>
-                    R<?php echo number_format($total, 2); ?>
-                </strong>
-
-            </div>
-
-        </section>
-
-        <section class="checkout-details">
-
-            <h2>Delivery and Payment</h2>
-
-            <form method="POST" class="checkout-form">
-
-                <div class="form-group">
-
-                    <label for="phone">
-                        Phone Number
-                    </label>
-
-                    <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        placeholder="Enter your phone number"
-                        required
-                    >
-
-                </div>
-
-                <div class="form-group">
-
-                    <label for="address">
-                        Delivery Address
-                    </label>
-
-                    <textarea
-                        id="address"
-                        name="address"
-                        placeholder="Enter your full delivery address"
-                        required
-                    ></textarea>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label for="payment_method">
-                        Payment Method
-                    </label>
-
-                    <select
-                        id="payment_method"
-                        name="payment_method"
-                        required
-                    >
-
-                        <option value="">
-                            Select payment method
-                        </option>
-
-                        <option value="Credit Card">
-                            Credit Card
-                        </option>
-
-                        <option value="Debit Card">
-                            Debit Card
-                        </option>
-
-                        <option value="EFT">
-                            EFT
-                        </option>
-
-                    </select>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label for="card_name">
-                        Name on Card
-                    </label>
-
-                    <input
-                        type="text"
-                        id="card_name"
-                        name="card_name"
-                        placeholder="Enter the cardholder's name"
-                        required
-                    >
-
-                </div>
-
-                <div class="form-group">
-
-                    <label for="card_number">
-                        Card Number
-                    </label>
-
-                    <input
-                        type="text"
-                        id="card_number"
-                        name="card_number"
-                        placeholder="Enter the card number"
-                        maxlength="16"
-                        inputmode="numeric"
-                        required
-                    >
-
-                </div>
-
-                <div class="card-row">
-
-                    <div class="form-group">
-
-                        <label for="expiry">
-                            Expiry Date
-                        </label>
-
-                        <input
-                            type="text"
-                            id="expiry"
-                            name="expiry"
-                            placeholder="MM/YY"
-                            maxlength="5"
-                            required
-                        >
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label for="cvv">
-                            CVV
-                        </label>
-
-                        <input
-                            type="password"
-                            id="cvv"
-                            name="cvv"
-                            placeholder="CVV"
-                            maxlength="3"
-                            inputmode="numeric"
-                            required
-                        >
-
+                        ?>
                     </div>
 
                 </div>
 
-                <p class="payment-notice">
-                    <i class="fa-solid fa-lock"></i>
-                    This is a simulated payment form for the project.
-                </p>
+            <?php endforeach; ?>
 
-                <button
-                    type="submit"
-                    name="place_order"
-                    class="checkout-btn"
+        </div>
+
+        <div class="checkout-total">
+            <span>Order Total</span>
+            <strong>
+                R<?php echo number_format($total, 2); ?>
+            </strong>
+        </div>
+
+    </section>
+
+    <section class="checkout-details">
+
+        <h2>Delivery and Payment</h2>
+
+        <p>
+            Your saved profile details will be filled in
+            automatically if available.
+        </p>
+
+        <form method="POST" class="checkout-form">
+
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="<?php echo checkoutEscape($_SESSION['checkout_csrf']); ?>"
+            >
+
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+
+                <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    maxlength="20"
+                    value="<?php echo checkoutEscape($phone); ?>"
+                    placeholder="Enter your phone number"
+                    required
                 >
-                    Place Order
-                </button>
+            </div>
 
-            </form>
+            <div class="form-group">
+                <label for="address">Delivery Address</label>
 
-        </section>
+                <textarea
+                    id="address"
+                    name="address"
+                    maxlength="2000"
+                    placeholder="Enter your full delivery address"
+                    required
+                ><?php echo checkoutEscape($address); ?></textarea>
+            </div>
 
-    </div>
+            <p>
+                <a href="edit_profile.php">
+                    Edit Saved Profile Details
+                </a>
+            </p>
+
+            <div class="form-group">
+                <label for="payment_method">
+                    Payment Method
+                </label>
+
+                <select
+                    id="payment_method"
+                    name="payment_method"
+                    required
+                >
+                    <option value="">
+                        Select payment method
+                    </option>
+
+                    <?php foreach (['Credit Card', 'Debit Card', 'EFT'] as $method): ?>
+                        <option
+                            value="<?php echo checkoutEscape($method); ?>"
+                            <?php echo $paymentMethod === $method ? 'selected' : ''; ?>
+                        >
+                            <?php echo checkoutEscape($method); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <p class="payment-notice">
+                This is a simulated payment for the college project.
+                No actual payment will be processed.
+            </p>
+
+            <button
+                type="submit"
+                name="place_order"
+                class="checkout-btn"
+            >
+                Place Order
+            </button>
+
+        </form>
+
+    </section>
+
+</div>
 
 </main>
 

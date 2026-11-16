@@ -59,6 +59,14 @@ if(isset($_POST['login'])){
 
     <?php endif; ?>
 
+    
+    <?php if (isset($_GET['reset']) && $_GET['reset'] === 'success'): ?>
+        <div class="form-message success">
+            Password reset successful! You can now log in with your new password.
+        </div>
+    <?php endif; ?>
+
+
     <form method="POST">
 
         <div class="form-group">
