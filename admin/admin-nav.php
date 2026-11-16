@@ -65,6 +65,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 Reports
             </a>
 
+            <a href="filtered-reports.php" class="<?php echo $current_page === 'filtered-reports.php' ? 'active' : ''; ?>">Filtered Reports</a>
+
             <a
                 href="../index.php"
                 target="_blank"

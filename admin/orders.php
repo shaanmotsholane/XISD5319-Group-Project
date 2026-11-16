@@ -7,6 +7,26 @@ if (!isset($_SESSION['admin'])) {
 }
 
 include '../config/db.php';
+if (empty($_SESSION['admin_order_csrf'])) {
+    $_SESSION['admin_order_csrf'] = bin2hex(random_bytes(32));
+}
+$allowed_statuses = ['Order Placed', 'Preparing', 'On the Way', 'Delivered', 'Cancelled'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
+    if (!hash_equals($_SESSION['admin_order_csrf'], (string)($_POST['csrf'] ?? ''))) {
+        http_response_code(403); exit('Invalid request token.');
+    }
+    $id = filter_var($_POST['order_id'] ?? null, FILTER_VALIDATE_INT);
+    $new_status = (string)($_POST['status'] ?? '');
+    if (!$id || !in_array($new_status, $allowed_statuses, true)) {
+        http_response_code(400); exit('Invalid order or status.');
+    }
+    $update = mysqli_prepare($conn, 'UPDATE orders SET status = ? WHERE order_id = ?');
+    mysqli_stmt_bind_param($update, 'si', $new_status, $id);
+    mysqli_stmt_execute($update);
+    mysqli_stmt_close($update);
+    header('Location: orders.php?updated=1'); exit;
+}
+
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +41,7 @@ $orders_sql = "
         orders.customer_id,
         orders.total_amount,
         orders.order_date,
+        orders.status,
         customers.name AS customer_name,
         customers.email AS customer_email
     FROM orders
@@ -158,6 +179,7 @@ foreach ($orders as $order) {
 
     </div>
 
+    <?php if (isset($_GET['updated'])): ?><p role="status" class="admin-update-message">Order status updated successfully.</p><?php endif; ?>
     <section class="admin-stats-grid">
 
         <article class="admin-stat-card">
@@ -247,6 +269,7 @@ foreach ($orders as $order) {
                             <th>Items</th>
                             <th>Total</th>
                             <th>Date</th>
+                            <th>Status / Update</th>
                         </tr>
 
                     </thead>
@@ -416,6 +439,19 @@ foreach ($orders as $order) {
 
                             </td>
 
+                            <td data-label="Status / Update">
+                                <form method="post" class="order-status-form">
+                                    <input type="hidden" name="csrf" value="<?php echo htmlspecialchars($_SESSION['admin_order_csrf'], ENT_QUOTES); ?>">
+                                    <input type="hidden" name="order_id" value="<?php echo (int)$order['order_id']; ?>">
+                                    <label for="status-<?php echo (int)$order['order_id']; ?>">Order status</label>
+                                    <select id="status-<?php echo (int)$order['order_id']; ?>" name="status">
+                                        <?php foreach ($allowed_statuses as $status_option): ?>
+                                        <option value="<?php echo htmlspecialchars($status_option, ENT_QUOTES); ?>" <?php echo $order['status'] === $status_option ? 'selected' : ''; ?>><?php echo htmlspecialchars($status_option); ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <button type="submit" name="update_status" value="1">Save Status</button>
+                                </form>
+                            </td>
                         </tr>
 
                     <?php } ?>

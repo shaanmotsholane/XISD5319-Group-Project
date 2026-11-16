@@ -2085,3 +2085,10 @@ body {
         box-shadow: none;
     }
 }
+/* Order tracking controls */
+.order-status-form {display:flex;flex-direction:column;gap:8px;min-width:160px;}
+.order-status-form label {font-size:12px;font-weight:700;}
+.order-status-form select {padding:9px;border:1px solid #aaa;border-radius:6px;background:white;color:#111;}
+.order-status-form button {padding:10px;border:0;border-radius:6px;background:#222;color:white;cursor:pointer;}
+.order-status-form button:hover {background:#444;color:white;}
+.admin-update-message {padding:12px 16px;margin:15px 0;background:#e7f8ec;color:#176b2c;border-radius:6px;}
